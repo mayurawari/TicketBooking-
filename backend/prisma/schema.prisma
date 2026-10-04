@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+//enums 
+
+enum Role{
+  USER
+  ADMIN
+}
+
+enum TheatreType {
+  MULTIPLEX
+  THEATRE
+}
+
+enum SeatType {
+  LUXURY
+  PLATINUM
+  GOLD
+  SILVER
+  FRONT
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+// Models
+//User
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String   
+  role      Role     @default(USER)
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @updatedAt
+
+  bookings Booking[]
+}
+
+
+// event
+model Event {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  releaseDate DateTime?
+  poster      String?
+  rating      Float?
+
+  venueId     Int
+  venue       Venue     @relation(fields: [venueId], references: [id])
+
+  bookings    Booking[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+//venue
+model Venue {
+  id           Int         @id @default(autoincrement())
+  name         String
+  address      String
+  type         TheatreType
+  totalSeats   Int
+  totalScreens Int
+
+  events       Event[]
+  seats        Seat[]
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+//seat
+model Seat {
+  id         Int      @id @default(autoincrement())
+  seatNumber String
+  row        String
+  type       SeatType
+
+  venueId    Int
+  venue      Venue    @relation(fields: [venueId], references: [id])
+
+  bookings   Booking[]
+}
+
+// booking
+model Booking {
+  id          Int           @id @default(autoincrement())
+  status      BookingStatus @default(PENDING)
+  totalAmount Float
+
+  userId      Int
+  user        User          @relation(fields: [userId], references: [id])
+
+  eventId     Int
+  event       Event         @relation(fields: [eventId], references: [id])
+
+  seatId      Int
+  seat        Seat          @relation(fields: [seatId], references: [id])
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
