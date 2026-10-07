@@ -77,6 +77,7 @@ model Venue {
   id           Int         @id @default(autoincrement())
   name         String
   address      String
+  city         String
   type         TheatreType
   totalSeats   Int
   totalScreens Int
