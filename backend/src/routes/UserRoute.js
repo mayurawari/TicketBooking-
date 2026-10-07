@@ -31,7 +31,7 @@ userrouter.post("/register", async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
 
-        const existinguser = await prisma.user.create({
+        const createuser = await prisma.user.create({
             data: {
                 name,
                 email,
@@ -39,9 +39,9 @@ userrouter.post("/register", async (req, res) => {
             }
         });
 
-        const accesstoken = jwt.sign({ id: existinguser.id }, key, { expiresIn: "15m" });
+        const accesstoken = jwt.sign({ id: createuser.id }, key, { expiresIn: "15m" });
 
-        const refreshtoken = jwt.sign({ id: existinguser.id }, key, { expiresIn: "7d" });
+        const refreshtoken = jwt.sign({ id: createuser.id }, key, { expiresIn: "7d" });
 
         res.cookie("accesstoken", accesstoken, {
             httpOnly: true,
