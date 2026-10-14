@@ -4,26 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "type": "module",
-    "postinstall": "prisma skills sync || exit 0",
-    "server": "nodemon index.js"
+    "start": "node index.js",
+    "server": "nodemon index.js",
+    "build": "prisma generate",
+    "postinstall": "prisma generate",
+    "test": "node scripts/test_routes.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "12.9.0",
-      "onFail": "download"
-    }
-  },
   "packageManager": "pnpm@12.9.0",
   "type": "module",
   "dependencies": {
     "@prisma/adapter-neon": "^7.10.0",
     "@prisma/client": "^7.10.0",
+    "@prisma/client-runtime-utils": "7.10.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

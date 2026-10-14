@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { config } from "dotenv";
 import { prisma } from "../configs/db.js";
+import { adminMiddleware } from "../middlewares/auth.js";
 
 config();
 const venuerouter = Router();
@@ -27,13 +28,14 @@ venuerouter.get("/", (req, res) => {
 venuerouter.post("/createvenue", async (req, res) => {
     const { name, city, address, type, totalSeats, totalScreens } = req.body;
     try {
-        if (name === undefined ||
-            city === undefined ||
-            address === undefined ||
-            type === undefined ||
-            totalSeats === undefined ||
-            totalScreens === undefined) {
-            return res.send("All fields are not provided");
+        if (!name || !city || !address || !type ||
+            totalSeats === undefined || totalScreens === undefined) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const validTypes = ["MULTIPLEX", "THEATRE"];
+        if (!validTypes.includes(type)) {
+            return res.status(400).json({ message: "Invalid venue type. Must be MULTIPLEX or THEATRE" });
         }
 
         const createVenue = await prisma.venue.create({
@@ -47,11 +49,11 @@ venuerouter.post("/createvenue", async (req, res) => {
             }
         })
 
-        res.status(201).json({ "Message": "The venue created successfully it will be refelected within 2-3 hours", createVenue });
+        res.status(201).json({ message: "The venue created successfully", createVenue });
 
     } catch (error) {
         console.log("venue creation", error);
-        res.status(500).send("Error while creating venue");
+        res.status(500).json({ message: "Error while creating venue" });
     }
 })
 
@@ -89,7 +91,7 @@ venuerouter.get("/getvenues", async (req, res) => {
 
     } catch (error) {
         console.log("error in finding venues", error);
-        res.status(401).send(error);
+        res.status(500).json({ message: "Error in finding venues" });
     }
 })
 
@@ -99,6 +101,10 @@ venuerouter.get("/getvenue/:id", async (req, res) => {
 
         const { id } = req.params;
         const venueid = Number(id);
+
+        if (isNaN(venueid) || venueid <= 0) {
+            return res.status(400).json({ message: "Invalid venue ID" });
+        }
 
         const venue = await prisma.venue.findUnique({
             where: { id: venueid }
@@ -118,12 +124,12 @@ venuerouter.get("/getvenue/:id", async (req, res) => {
 
     } catch (error) {
         console.log("error in fetching venue", error);
-        res.status(401).send(error);
+        res.status(500).json({ message: "Error in fetching venue" });
     }
 })
 
 // PATCH  /venues/:id
-venuerouter.patch("/getvenue/:id", async (req, res) => {
+venuerouter.patch("/getvenue/:id", adminMiddleware, async (req, res) => {
     const { name, city, address, type, totalSeats, totalScreens } = req.body;
     try {
 
@@ -143,6 +149,10 @@ venuerouter.patch("/getvenue/:id", async (req, res) => {
         const { id } = req.params;
         const venueid = Number(id);
 
+        if (isNaN(venueid) || venueid <= 0) {
+            return res.status(400).json({ message: "Invalid venue ID" });
+        }
+
         const venue = await prisma.venue.findUnique({
             where: { id: venueid }
         })
@@ -161,24 +171,29 @@ venuerouter.patch("/getvenue/:id", async (req, res) => {
         })
 
         return res.status(200).json({
-            message: "Venue pathched successfully",
+            message: "Venue patched successfully",
             venue: patchedvenue
         });
 
 
     } catch (error) {
-        console.log("error in pathching venue", error);
-        res.status(500).send(error);
+        console.log("error in patching venue", error);
+        res.status(500).json({ message: "Error in patching venue" });
     }
 })
 // DELETE /venues/:id
-venuerouter.delete("/deletevenue/:id", async (req, res) => {
+venuerouter.delete("/deletevenue/:id", adminMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         const venueid = Number(id);
 
+        if (isNaN(venueid) || venueid <= 0) {
+            return res.status(400).json({ message: "Invalid venue ID" });
+        }
+
         const venue = await prisma.venue.findUnique({
-            where: { id: venueid }
+            where: { id: venueid },
+            include: { events: true, seats: true }
         })
 
         if (!venue) {
@@ -186,6 +201,19 @@ venuerouter.delete("/deletevenue/:id", async (req, res) => {
                 message: "Venue not found"
             });
         }
+
+        // Delete related records first to avoid FK constraint errors
+        // Delete bookings tied to events of this venue
+        await prisma.booking.deleteMany({
+            where: { event: { venueId: venueid } }
+        });
+        // Delete bookings tied to seats of this venue
+        await prisma.booking.deleteMany({
+            where: { seat: { venueId: venueid } }
+        });
+        // Delete events and seats
+        await prisma.event.deleteMany({ where: { venueId: venueid } });
+        await prisma.seat.deleteMany({ where: { venueId: venueid } });
 
         const deletevenue = await prisma.venue.delete({ where: { id: venueid } })
 
@@ -196,8 +224,8 @@ venuerouter.delete("/deletevenue/:id", async (req, res) => {
 
 
     } catch (error) {
-        console.log("error in pathching venue", error);
-        res.status(401).send(error);
+        console.log("error in deleting venue", error);
+        res.status(500).json({ message: "Error in deleting venue" });
     }
 })
 
