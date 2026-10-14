@@ -1,5 +1,6 @@
 import { Router } from "express"
 import { prisma } from "../configs/db.js"
+import { adminMiddleware } from "../middlewares/auth.js"
 
 const eventrouter = Router();
 
@@ -7,32 +8,16 @@ eventrouter.get("/", async (req, res) => {
     try {
         res.send("this is eventroute");
     } catch (error) {
-        res.send("Error in eventrouter", error);
+        res.status(500).json({ message: "Error in eventrouter" });
     }
 })
 
 //Event Route
-// model Event {
-//   id          Int       @id @default(autoincrement())
-//   title       String
-//   description String?
-//   releaseDate DateTime?
-//   poster      String?
-//   rating      Float?
-
-//   venueId     Int
-//   venue       Venue     @relation(fields: [venueId], references: [id])
-
-//   bookings    Booking[]
-
-//   createdAt   DateTime  @default(now())
-//   updatedAt   DateTime  @updatedAt
-// }
-eventrouter.post("/createevent", async (req, res) => {
+eventrouter.post("/createevent", adminMiddleware, async (req, res) => {
     const { title, description, releaseDate, poster, rating, venueId } = req.body;
     try {
         if (!title || !venueId) {
-            return res.json({ " message": "Title and venueId are required" });
+            return res.status(400).json({ message: "Title and venueId are required" });
         }
 
         const newevent = await prisma.event.create({
@@ -46,10 +31,10 @@ eventrouter.post("/createevent", async (req, res) => {
             }
         })
 
-        res.status(201).json({ "message": "Event created successfully", newevent });
+        res.status(201).json({ message: "Event created successfully", newevent });
     } catch (error) {
         console.log("error in creating event", error);
-        res.send("error while creating event", error);
+        res.status(500).json({ message: "Error while creating event" });
     }
 })
 
@@ -81,10 +66,10 @@ eventrouter.get("/getevents", async (req, res) => {
             take: 10
         });
 
-        res.status(200).json({ "Message": "The events", allevents });
+        res.status(200).json({ message: "The events", allevents });
     } catch (error) {
         console.log("Error getting events", error);
-        res.send("Error getting events", error);
+        res.status(500).json({ message: "Error getting events" });
     }
 })
 
@@ -93,26 +78,35 @@ eventrouter.get("/oneevent/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const eventId = Number(id);
+
+        if (isNaN(eventId) || eventId <= 0) {
+            return res.status(400).json({ message: "Invalid event ID" });
+        }
+
         const getevent = await prisma.event.findUnique({ where: { id: eventId } })
         if (!getevent) {
-            return res.send("No event found");
+            return res.status(404).json({ message: "No event found" });
         }
-        res.status(200).json({ "Message": "The event", getevent });
+        res.status(200).json({ message: "The event", getevent });
     } catch (error) {
         console.log("Error getting event", error);
-        res.send("Error getting event", error);
+        res.status(500).json({ message: "Error getting event" });
     }
 })
 //update events by id 
-// 4	PATCH	/events/:id	Update event
-eventrouter.patch("/updateevent/:id", async (req, res) => {
+eventrouter.patch("/updateevent/:id", adminMiddleware, async (req, res) => {
     const { title, description, releaseDate, poster, rating, venueId } = req.body;
     try {
         const { id } = req.params;
         const eventId = Number(id);
+
+        if (isNaN(eventId) || eventId <= 0) {
+            return res.status(400).json({ message: "Invalid event ID" });
+        }
+
         const getevent = await prisma.event.findUnique({ where: { id: eventId } })
         if (!getevent) {
-            return res.send("No event found");
+            return res.status(404).json({ message: "No event found" });
         }
         const data = {};
         if (title !== undefined) {
@@ -135,30 +129,39 @@ eventrouter.patch("/updateevent/:id", async (req, res) => {
         }
 
         const saveevent = await prisma.event.update({ where: { id: eventId }, data });
-        res.status(200).json({ "Message": "The event updated", saveevent });
+        res.status(200).json({ message: "The event updated", saveevent });
     } catch (error) {
         console.log("Error updating event", error);
-        res.send("Error updating event", error);
+        res.status(500).json({ message: "Error updating event" });
     }
 })
 
-// 5	DELETE	/events/:id	Delete event
-eventrouter.delete("/deleteevent/:id", async (req, res) => {
+// DELETE /events/:id
+eventrouter.delete("/deleteevent/:id", adminMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         const eventId = Number(id);
+
+        if (isNaN(eventId) || eventId <= 0) {
+            return res.status(400).json({ message: "Invalid event ID" });
+        }
+
         const event = await prisma.event.findUnique({
             where: { id: eventId }
         });
 
         if (!event) {
-            return res.status(404).send("No event found");
+            return res.status(404).json({ message: "No event found" });
         }
+
+        // Delete related bookings first to avoid FK constraint errors
+        await prisma.booking.deleteMany({ where: { eventId: eventId } });
+
         const deleteevent = await prisma.event.delete({ where: { id: eventId } });
-        res.status(200).json({ "Message": "The event deleted", deleteevent });
+        res.status(200).json({ message: "The event deleted", deleteevent });
     } catch (error) {
-        console.log("Error getting event", error);
-        res.send("Error getting event", error);
+        console.log("Error deleting event", error);
+        res.status(500).json({ message: "Error deleting event" });
     }
 })
 

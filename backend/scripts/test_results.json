@@ -1,0 +1,7160 @@
+[
+  {
+    "id": 1,
+    "name": "Root Endpoint Health Check",
+    "description": "Verify server root welcome message is served",
+    "method": "GET",
+    "endpoint": "/",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 122,
+    "requestBody": null,
+    "responseBody": "Welcome to the Ticket Booking API"
+  },
+  {
+    "id": 2,
+    "name": "User Route Base Probe",
+    "description": "Verify /auth base message",
+    "method": "GET",
+    "endpoint": "/auth/",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 6,
+    "requestBody": null,
+    "responseBody": "This is the user route"
+  },
+  {
+    "id": 3,
+    "name": "Register - Validation Failure",
+    "description": "Attempt registration with missing password to verify 400 validation error",
+    "method": "POST",
+    "endpoint": "/auth/register",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 25,
+    "requestBody": {
+      "name": "Test Incomplete",
+      "email": "incomplete@ticket.com"
+    },
+    "responseBody": {
+      "message": "Please provide all required fields"
+    }
+  },
+  {
+    "id": 4,
+    "name": "Register - Duplicate User Error",
+    "description": "Attempt registering existing user (admin@ticketbooking.com)",
+    "method": "POST",
+    "endpoint": "/auth/register",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 1619,
+    "requestBody": {
+      "name": "Super Admin",
+      "email": "admin@ticketbooking.com",
+      "password": "Admin@123"
+    },
+    "responseBody": {
+      "message": "User already exists"
+    }
+  },
+  {
+    "id": 5,
+    "name": "Register - Valid New User",
+    "description": "Register a brand new user and receive 201 + auth cookies",
+    "method": "POST",
+    "endpoint": "/auth/register",
+    "expectedStatus": 201,
+    "actualStatus": 201,
+    "passed": true,
+    "durationMs": 658,
+    "requestBody": {
+      "name": "Automated Tester",
+      "email": "test_user_1791958613098@test.com",
+      "password": "Password@123"
+    },
+    "responseBody": {
+      "message": "User registered successfully",
+      "user": {
+        "id": 7,
+        "email": "test_user_1791958613098@test.com",
+        "name": "Automated Tester",
+        "role": "USER"
+      },
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Nywicm9sZSI6IlVTRVIiLCJpYXQiOjE3OTE5NTg2MTMsImV4cCI6MTc5MTk1OTUxM30.AGXfICVvttqxyTgisyFX9ZmOWAZIxycxIuv9hp8Uxn4"
+    }
+  },
+  {
+    "id": 6,
+    "name": "Login - Validation Failure",
+    "description": "Attempt login with missing credentials",
+    "method": "POST",
+    "endpoint": "/auth/login",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 4,
+    "requestBody": {
+      "email": "admin@ticketbooking.com"
+    },
+    "responseBody": {
+      "message": "Please provide all required fields"
+    }
+  },
+  {
+    "id": 7,
+    "name": "Login - Invalid Credentials",
+    "description": "Attempt login with incorrect password",
+    "method": "POST",
+    "endpoint": "/auth/login",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 396,
+    "requestBody": {
+      "email": "admin@ticketbooking.com",
+      "password": "WrongPassword999"
+    },
+    "responseBody": {
+      "message": "Invalid credentials"
+    }
+  },
+  {
+    "id": 8,
+    "name": "Login - Regular User (USER Role)",
+    "description": "Login as regular user and establish standard session cookie jar",
+    "method": "POST",
+    "endpoint": "/auth/login",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 370,
+    "requestBody": {
+      "email": "mayurawari50@gmail.com",
+      "password": "123456"
+    },
+    "responseBody": {
+      "message": "Login successful",
+      "user": {
+        "id": 1,
+        "email": "mayurawari50@gmail.com",
+        "name": "Mayur Awari",
+        "role": "USER"
+      },
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IlVTRVIiLCJpYXQiOjE3OTE5NTg2MTQsImV4cCI6MTc5MTk1OTUxNH0.naKT4oaUgNs-u37-FgKr-1lhLBGF1MmA6KSrvm4LNL4"
+    }
+  },
+  {
+    "id": 9,
+    "name": "Login - Admin User (ADMIN Role)",
+    "description": "Login as administrator and establish privileged session cookie jar",
+    "method": "POST",
+    "endpoint": "/auth/login",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 356,
+    "requestBody": {
+      "email": "admin@ticketbooking.com",
+      "password": "Admin@123"
+    },
+    "responseBody": {
+      "message": "Login successful",
+      "user": {
+        "id": 3,
+        "email": "admin@ticketbooking.com",
+        "name": "Super Admin",
+        "role": "ADMIN"
+      },
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sZSI6IkFETUlOIiwiaWF0IjoxNzkxOTU4NjE0LCJleHAiOjE3OTE5NTk1MTR9.GJknwjwMOANId2vdvjWaNWq9Y2vJlButSCRtEFpMkmk"
+    }
+  },
+  {
+    "id": 10,
+    "name": "Refresh Token - Missing Cookie",
+    "description": "Attempt refresh with empty cookies",
+    "method": "POST",
+    "endpoint": "/auth/refresh",
+    "expectedStatus": 401,
+    "actualStatus": 401,
+    "passed": true,
+    "durationMs": 16,
+    "requestBody": null,
+    "responseBody": {
+      "message": "No refresh token provided"
+    }
+  },
+  {
+    "id": 11,
+    "name": "Refresh Token - Success",
+    "description": "Call /auth/refresh with valid refreshtoken cookie",
+    "method": "POST",
+    "endpoint": "/auth/refresh",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 295,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Token refreshed successfully",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sZSI6IkFETUlOIiwiaWF0IjoxNzkxOTU4NjE1LCJleHAiOjE3OTE5NTk1MTV9.ShGvV7TJdeYzI6GTb3PozgmrW0kv9d6Qxq88ZwqW9K4",
+      "user": {
+        "id": 3,
+        "email": "admin@ticketbooking.com",
+        "name": "Super Admin",
+        "role": "ADMIN"
+      }
+    }
+  },
+  {
+    "id": 12,
+    "name": "Venue Base - Unauthenticated Access",
+    "description": "Attempt accessing /api/venue without JWT cookie (should return 401 Access Denied)",
+    "method": "GET",
+    "endpoint": "/api/venue/",
+    "expectedStatus": 401,
+    "actualStatus": 401,
+    "passed": true,
+    "durationMs": 3,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Access Denied"
+    }
+  },
+  {
+    "id": 13,
+    "name": "Venue Base - Authenticated Access",
+    "description": "Access /api/venue with valid user cookie",
+    "method": "GET",
+    "endpoint": "/api/venue/",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 15,
+    "requestBody": null,
+    "responseBody": "This is venue route"
+  },
+  {
+    "id": 14,
+    "name": "Venue Create - RBAC Forbidden for Standard User",
+    "description": "Attempt creating venue as standard USER role (should return 403 Forbidden)",
+    "method": "POST",
+    "endpoint": "/api/venue/createvenue",
+    "expectedStatus": 403,
+    "actualStatus": 403,
+    "passed": true,
+    "durationMs": 15,
+    "requestBody": {
+      "name": "Unauthorized Multiplex",
+      "city": "Pune",
+      "address": "FC Road",
+      "type": "MULTIPLEX",
+      "totalSeats": 100,
+      "totalScreens": 2
+    },
+    "responseBody": {
+      "message": "Forbidden: Admin access required"
+    }
+  },
+  {
+    "id": 15,
+    "name": "Venue Create - Admin Validation Missing Fields",
+    "description": "Admin attempts creating venue with missing city and address",
+    "method": "POST",
+    "endpoint": "/api/venue/createvenue",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 6,
+    "requestBody": {
+      "name": "Incomplete Venue"
+    },
+    "responseBody": {
+      "message": "All fields are required"
+    }
+  },
+  {
+    "id": 16,
+    "name": "Venue Create - Admin Validation Invalid Type",
+    "description": "Admin attempts creating venue with invalid type (not MULTIPLEX or THEATRE)",
+    "method": "POST",
+    "endpoint": "/api/venue/createvenue",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 7,
+    "requestBody": {
+      "name": "Invalid Type Venue",
+      "city": "Bengaluru",
+      "address": "MG Road",
+      "type": "DRIVE_IN",
+      "totalSeats": 100,
+      "totalScreens": 1
+    },
+    "responseBody": {
+      "message": "Invalid venue type. Must be MULTIPLEX or THEATRE"
+    }
+  },
+  {
+    "id": 17,
+    "name": "Venue Create - Admin Valid",
+    "description": "Admin creates a new valid test venue",
+    "method": "POST",
+    "endpoint": "/api/venue/createvenue",
+    "expectedStatus": 201,
+    "actualStatus": 201,
+    "passed": true,
+    "durationMs": 305,
+    "requestBody": {
+      "name": "Cinepolis: Seasons Mall",
+      "city": "Pune",
+      "address": "Magarpatta City, Hadapsar, Pune, Maharashtra 411028",
+      "type": "MULTIPLEX",
+      "totalSeats": 220,
+      "totalScreens": 6
+    },
+    "responseBody": {
+      "message": "The venue created successfully",
+      "createVenue": {
+        "id": 9,
+        "name": "Cinepolis: Seasons Mall",
+        "address": "Magarpatta City, Hadapsar, Pune, Maharashtra 411028",
+        "city": "Pune",
+        "type": "MULTIPLEX",
+        "totalSeats": 220,
+        "totalScreens": 6,
+        "createdAt": "2026-10-14T06:16:55.261Z",
+        "updatedAt": "2026-10-14T06:16:55.261Z"
+      }
+    }
+  },
+  {
+    "id": 18,
+    "name": "Venues List - All Venues",
+    "description": "Fetch all venues in the database",
+    "method": "GET",
+    "endpoint": "/api/venue/getvenues",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 292,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Venues fetched successfully",
+      "venues": [
+        {
+          "id": 1,
+          "name": "Radhakrishna 3d theatre",
+          "address": "Near varoranaka, under varoranaka flyover, tukum, chandrapur, Maharashtra 442401",
+          "city": "Chandrapur",
+          "type": "THEATRE",
+          "totalSeats": 300,
+          "totalScreens": 1,
+          "createdAt": "2026-10-07T08:24:00.851Z",
+          "updatedAt": "2026-10-12T07:13:48.027Z"
+        },
+        {
+          "id": 2,
+          "name": "PVR ICON: Phoenix Palladium",
+          "address": "462, Senapati Bapat Marg, Lower Parel, Mumbai, Maharashtra 400013",
+          "city": "Mumbai",
+          "type": "MULTIPLEX",
+          "totalSeats": 160,
+          "totalScreens": 5,
+          "createdAt": "2026-10-12T07:13:49.563Z",
+          "updatedAt": "2026-10-12T07:13:49.563Z"
+        },
+        {
+          "id": 3,
+          "name": "INOX Megaplex: Inorbit Mall",
+          "address": "Link Road, Malad West, Mumbai, Maharashtra 400064",
+          "city": "Mumbai",
+          "type": "MULTIPLEX",
+          "totalSeats": 150,
+          "totalScreens": 4,
+          "createdAt": "2026-10-12T07:13:50.664Z",
+          "updatedAt": "2026-10-12T07:13:50.664Z"
+        },
+        {
+          "id": 4,
+          "name": "PVR Directors Cut: Ambience Mall",
+          "address": "Nelson Mandela Marg, Vasant Kunj, New Delhi, Delhi 110070",
+          "city": "New Delhi",
+          "type": "MULTIPLEX",
+          "totalSeats": 100,
+          "totalScreens": 3,
+          "createdAt": "2026-10-12T07:13:51.741Z",
+          "updatedAt": "2026-10-12T07:13:51.741Z"
+        },
+        {
+          "id": 5,
+          "name": "Prasad Large Screen Multiplex",
+          "address": "NTR Gardens, Necklace Road, Hyderabad, Telangana 500063",
+          "city": "Hyderabad",
+          "type": "MULTIPLEX",
+          "totalSeats": 220,
+          "totalScreens": 6,
+          "createdAt": "2026-10-12T07:13:52.851Z",
+          "updatedAt": "2026-10-12T07:13:52.851Z"
+        },
+        {
+          "id": 9,
+          "name": "Cinepolis: Seasons Mall",
+          "address": "Magarpatta City, Hadapsar, Pune, Maharashtra 411028",
+          "city": "Pune",
+          "type": "MULTIPLEX",
+          "totalSeats": 220,
+          "totalScreens": 6,
+          "createdAt": "2026-10-14T06:16:55.261Z",
+          "updatedAt": "2026-10-14T06:16:55.261Z"
+        }
+      ]
+    }
+  },
+  {
+    "id": 19,
+    "name": "Venues List - Filter by City (Mumbai)",
+    "description": "Filter venues located in Mumbai",
+    "method": "GET",
+    "endpoint": "/api/venue/getvenues?city=Mumbai",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 282,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Venues fetched successfully",
+      "venues": [
+        {
+          "id": 2,
+          "name": "PVR ICON: Phoenix Palladium",
+          "address": "462, Senapati Bapat Marg, Lower Parel, Mumbai, Maharashtra 400013",
+          "city": "Mumbai",
+          "type": "MULTIPLEX",
+          "totalSeats": 160,
+          "totalScreens": 5,
+          "createdAt": "2026-10-12T07:13:49.563Z",
+          "updatedAt": "2026-10-12T07:13:49.563Z"
+        },
+        {
+          "id": 3,
+          "name": "INOX Megaplex: Inorbit Mall",
+          "address": "Link Road, Malad West, Mumbai, Maharashtra 400064",
+          "city": "Mumbai",
+          "type": "MULTIPLEX",
+          "totalSeats": 150,
+          "totalScreens": 4,
+          "createdAt": "2026-10-12T07:13:50.664Z",
+          "updatedAt": "2026-10-12T07:13:50.664Z"
+        }
+      ]
+    }
+  },
+  {
+    "id": 20,
+    "name": "Venues List - Filter by Event Title (Dune)",
+    "description": "Filter venues screening Dune",
+    "method": "GET",
+    "endpoint": "/api/venue/getvenues?event=Dune",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 295,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Venues fetched successfully",
+      "venues": [
+        {
+          "id": 2,
+          "name": "PVR ICON: Phoenix Palladium",
+          "address": "462, Senapati Bapat Marg, Lower Parel, Mumbai, Maharashtra 400013",
+          "city": "Mumbai",
+          "type": "MULTIPLEX",
+          "totalSeats": 160,
+          "totalScreens": 5,
+          "createdAt": "2026-10-12T07:13:49.563Z",
+          "updatedAt": "2026-10-12T07:13:49.563Z"
+        },
+        {
+          "id": 5,
+          "name": "Prasad Large Screen Multiplex",
+          "address": "NTR Gardens, Necklace Road, Hyderabad, Telangana 500063",
+          "city": "Hyderabad",
+          "type": "MULTIPLEX",
+          "totalSeats": 220,
+          "totalScreens": 6,
+          "createdAt": "2026-10-12T07:13:52.851Z",
+          "updatedAt": "2026-10-12T07:13:52.851Z"
+        }
+      ]
+    }
+  },
+  {
+    "id": 21,
+    "name": "Venue By ID - Valid ID",
+    "description": "Fetch single venue by its numeric ID (ID: 1)",
+    "method": "GET",
+    "endpoint": "/api/venue/getvenue/1",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 300,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Venue fetched successfully",
+      "venue": {
+        "id": 1,
+        "name": "Radhakrishna 3d theatre",
+        "address": "Near varoranaka, under varoranaka flyover, tukum, chandrapur, Maharashtra 442401",
+        "city": "Chandrapur",
+        "type": "THEATRE",
+        "totalSeats": 300,
+        "totalScreens": 1,
+        "createdAt": "2026-10-07T08:24:00.851Z",
+        "updatedAt": "2026-10-12T07:13:48.027Z"
+      }
+    }
+  },
+  {
+    "id": 22,
+    "name": "Venue By ID - Invalid Format ID",
+    "description": "Fetch venue with invalid string ID (e.g., \"invalid_id\")",
+    "method": "GET",
+    "endpoint": "/api/venue/getvenue/invalid_id",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 17,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Invalid venue ID"
+    }
+  },
+  {
+    "id": 23,
+    "name": "Venue By ID - Non-existent ID",
+    "description": "Fetch venue with non-existent ID 99999",
+    "method": "GET",
+    "endpoint": "/api/venue/getvenue/99999",
+    "expectedStatus": 404,
+    "actualStatus": 404,
+    "passed": true,
+    "durationMs": 279,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Venue not found"
+    }
+  },
+  {
+    "id": 24,
+    "name": "Venue Update - Standard User Forbidden",
+    "description": "Standard user attempts patching venue",
+    "method": "PATCH",
+    "endpoint": "/api/venue/getvenue/9",
+    "expectedStatus": 403,
+    "actualStatus": 403,
+    "passed": true,
+    "durationMs": 19,
+    "requestBody": {
+      "name": "Hacked Name"
+    },
+    "responseBody": {
+      "message": "Forbidden: Admin access required"
+    }
+  },
+  {
+    "id": 25,
+    "name": "Venue Update - Admin Success",
+    "description": "Admin patches venue details",
+    "method": "PATCH",
+    "endpoint": "/api/venue/getvenue/9",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 563,
+    "requestBody": {
+      "name": "Cinepolis VIP: Seasons Mall",
+      "totalScreens": 7
+    },
+    "responseBody": {
+      "message": "Venue patched successfully",
+      "venue": {
+        "id": 9,
+        "name": "Cinepolis VIP: Seasons Mall",
+        "address": "Magarpatta City, Hadapsar, Pune, Maharashtra 411028",
+        "city": "Pune",
+        "type": "MULTIPLEX",
+        "totalSeats": 220,
+        "totalScreens": 7,
+        "createdAt": "2026-10-14T06:16:55.261Z",
+        "updatedAt": "2026-10-14T06:16:57.331Z"
+      }
+    }
+  },
+  {
+    "id": 26,
+    "name": "Venue Delete - Standard User Forbidden",
+    "description": "Standard user attempts deleting venue",
+    "method": "DELETE",
+    "endpoint": "/api/venue/deletevenue/9",
+    "expectedStatus": 403,
+    "actualStatus": 403,
+    "passed": true,
+    "durationMs": 14,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Forbidden: Admin access required"
+    }
+  },
+  {
+    "id": 27,
+    "name": "Venue Delete - Admin Success",
+    "description": "Admin deletes the created temp venue with cascade safety",
+    "method": "DELETE",
+    "endpoint": "/api/venue/deletevenue/9",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 3498,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Venue deleted successfully",
+      "deletevenue": {
+        "id": 9,
+        "name": "Cinepolis VIP: Seasons Mall",
+        "address": "Magarpatta City, Hadapsar, Pune, Maharashtra 411028",
+        "city": "Pune",
+        "type": "MULTIPLEX",
+        "totalSeats": 220,
+        "totalScreens": 7,
+        "createdAt": "2026-10-14T06:16:55.261Z",
+        "updatedAt": "2026-10-14T06:16:57.331Z"
+      }
+    }
+  },
+  {
+    "id": 28,
+    "name": "Event Base - Unauthenticated Access",
+    "description": "Attempt accessing /api/event without JWT cookie (should return 401)",
+    "method": "GET",
+    "endpoint": "/api/event/",
+    "expectedStatus": 401,
+    "actualStatus": 401,
+    "passed": true,
+    "durationMs": 5,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Access Denied"
+    }
+  },
+  {
+    "id": 29,
+    "name": "Event Base - Authenticated Access",
+    "description": "Access /api/event with valid JWT cookie",
+    "method": "GET",
+    "endpoint": "/api/event/",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 5,
+    "requestBody": null,
+    "responseBody": "this is eventroute"
+  },
+  {
+    "id": 30,
+    "name": "Event Create - Standard User Forbidden",
+    "description": "Standard user attempts creating event",
+    "method": "POST",
+    "endpoint": "/api/event/createevent",
+    "expectedStatus": 403,
+    "actualStatus": 403,
+    "passed": true,
+    "durationMs": 5,
+    "requestBody": {
+      "title": "Unauthorized Concert",
+      "venueId": 1
+    },
+    "responseBody": {
+      "message": "Forbidden: Admin access required"
+    }
+  },
+  {
+    "id": 31,
+    "name": "Event Create - Admin Missing Title",
+    "description": "Admin attempts creating event without required title",
+    "method": "POST",
+    "endpoint": "/api/event/createevent",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 5,
+    "requestBody": {
+      "description": "Missing Title",
+      "venueId": 1
+    },
+    "responseBody": {
+      "message": "Title and venueId are required"
+    }
+  },
+  {
+    "id": 32,
+    "name": "Event Create - Admin Valid",
+    "description": "Admin creates a temporary event for testing",
+    "method": "POST",
+    "endpoint": "/api/event/createevent",
+    "expectedStatus": 201,
+    "actualStatus": 201,
+    "passed": true,
+    "durationMs": 505,
+    "requestBody": {
+      "title": "Avengers: Secret Wars Sneak Peek",
+      "description": "Exclusive first look teaser and cast interaction.",
+      "releaseDate": "2026-05-01T00:00:00.000Z",
+      "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401",
+      "rating": 9.1,
+      "venueId": 1
+    },
+    "responseBody": {
+      "message": "Event created successfully",
+      "newevent": {
+        "id": 15,
+        "title": "Avengers: Secret Wars Sneak Peek",
+        "description": "Exclusive first look teaser and cast interaction.",
+        "releaseDate": "2026-05-01T00:00:00.000Z",
+        "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401",
+        "rating": 9.1,
+        "venueId": 1,
+        "createdAt": "2026-10-14T06:17:01.140Z",
+        "updatedAt": "2026-10-14T06:17:01.140Z"
+      }
+    }
+  },
+  {
+    "id": 33,
+    "name": "Events List - All Events",
+    "description": "Fetch list of all available events",
+    "method": "GET",
+    "endpoint": "/api/event/getevents",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 308,
+    "requestBody": null,
+    "responseBody": {
+      "message": "The events",
+      "allevents": [
+        {
+          "id": 1,
+          "title": "Dune: Part Two",
+          "description": "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+          "releaseDate": "2024-03-01T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
+          "rating": 8.6,
+          "venueId": 2,
+          "createdAt": "2026-10-12T07:13:53.963Z",
+          "updatedAt": "2026-10-12T07:13:53.963Z"
+        },
+        {
+          "id": 2,
+          "title": "Dune: Part Two",
+          "description": "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+          "releaseDate": "2024-03-01T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
+          "rating": 8.6,
+          "venueId": 5,
+          "createdAt": "2026-10-12T07:13:54.502Z",
+          "updatedAt": "2026-10-12T07:13:54.502Z"
+        },
+        {
+          "id": 3,
+          "title": "Oppenheimer: 70mm Special",
+          "description": "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.",
+          "releaseDate": "2023-07-21T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=800&q=80",
+          "rating": 8.9,
+          "venueId": 4,
+          "createdAt": "2026-10-12T07:13:55.038Z",
+          "updatedAt": "2026-10-12T07:13:55.038Z"
+        },
+        {
+          "id": 4,
+          "title": "Oppenheimer: 70mm Special",
+          "description": "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.",
+          "releaseDate": "2023-07-21T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=800&q=80",
+          "rating": 8.9,
+          "venueId": 2,
+          "createdAt": "2026-10-12T07:13:55.629Z",
+          "updatedAt": "2026-10-12T07:13:55.629Z"
+        },
+        {
+          "id": 5,
+          "title": "Interstellar: 10th Anniversary IMAX",
+          "description": "When Earth becomes uninhabitable in the future, a farmer and ex-NASA pilot is tasked to pilot a spacecraft along with a team of researchers.",
+          "releaseDate": "2024-11-07T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80",
+          "rating": 8.7,
+          "venueId": 3,
+          "createdAt": "2026-10-12T07:13:56.179Z",
+          "updatedAt": "2026-10-12T07:13:56.179Z"
+        },
+        {
+          "id": 6,
+          "title": "Interstellar: 10th Anniversary IMAX",
+          "description": "When Earth becomes uninhabitable in the future, a farmer and ex-NASA pilot is tasked to pilot a spacecraft along with a team of researchers.",
+          "releaseDate": "2024-11-07T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80",
+          "rating": 8.7,
+          "venueId": 5,
+          "createdAt": "2026-10-12T07:13:56.711Z",
+          "updatedAt": "2026-10-12T07:13:56.711Z"
+        },
+        {
+          "id": 7,
+          "title": "Kalki 2898 AD",
+          "description": "A modern avatar of Vishnu, a Hindu god, who is believed to have descended to the earth to protect the world from evil forces.",
+          "releaseDate": "2024-06-27T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
+          "rating": 7.6,
+          "venueId": 1,
+          "createdAt": "2026-10-12T07:13:57.261Z",
+          "updatedAt": "2026-10-12T07:13:57.261Z"
+        },
+        {
+          "id": 8,
+          "title": "Kalki 2898 AD",
+          "description": "A modern avatar of Vishnu, a Hindu god, who is believed to have descended to the earth to protect the world from evil forces.",
+          "releaseDate": "2024-06-27T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
+          "rating": 7.6,
+          "venueId": 5,
+          "createdAt": "2026-10-12T07:13:57.801Z",
+          "updatedAt": "2026-10-12T07:13:57.801Z"
+        },
+        {
+          "id": 9,
+          "title": "Stree 2: Sarkate Ka Aatank",
+          "description": "The town of Chanderi is being haunted again, this time by a headless entity named Sarkata that kidnaps modern women.",
+          "releaseDate": "2024-08-15T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80",
+          "rating": 7.4,
+          "venueId": 1,
+          "createdAt": "2026-10-12T07:13:58.330Z",
+          "updatedAt": "2026-10-12T07:13:58.330Z"
+        },
+        {
+          "id": 10,
+          "title": "Stree 2: Sarkate Ka Aatank",
+          "description": "The town of Chanderi is being haunted again, this time by a headless entity named Sarkata that kidnaps modern women.",
+          "releaseDate": "2024-08-15T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80",
+          "rating": 7.4,
+          "venueId": 3,
+          "createdAt": "2026-10-12T07:13:58.863Z",
+          "updatedAt": "2026-10-12T07:13:58.863Z"
+        }
+      ]
+    }
+  },
+  {
+    "id": 34,
+    "name": "Events List - Filter by City (Chandrapur)",
+    "description": "Filter events by venue city Chandrapur",
+    "method": "GET",
+    "endpoint": "/api/event/getevents?city=Chandrapur",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 292,
+    "requestBody": null,
+    "responseBody": {
+      "message": "The events",
+      "allevents": [
+        {
+          "id": 7,
+          "title": "Kalki 2898 AD",
+          "description": "A modern avatar of Vishnu, a Hindu god, who is believed to have descended to the earth to protect the world from evil forces.",
+          "releaseDate": "2024-06-27T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
+          "rating": 7.6,
+          "venueId": 1,
+          "createdAt": "2026-10-12T07:13:57.261Z",
+          "updatedAt": "2026-10-12T07:13:57.261Z"
+        },
+        {
+          "id": 9,
+          "title": "Stree 2: Sarkate Ka Aatank",
+          "description": "The town of Chanderi is being haunted again, this time by a headless entity named Sarkata that kidnaps modern women.",
+          "releaseDate": "2024-08-15T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80",
+          "rating": 7.4,
+          "venueId": 1,
+          "createdAt": "2026-10-12T07:13:58.330Z",
+          "updatedAt": "2026-10-12T07:13:58.330Z"
+        },
+        {
+          "id": 15,
+          "title": "Avengers: Secret Wars Sneak Peek",
+          "description": "Exclusive first look teaser and cast interaction.",
+          "releaseDate": "2026-05-01T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401",
+          "rating": 9.1,
+          "venueId": 1,
+          "createdAt": "2026-10-14T06:17:01.140Z",
+          "updatedAt": "2026-10-14T06:17:01.140Z"
+        }
+      ]
+    }
+  },
+  {
+    "id": 35,
+    "name": "Events List - Filter by Title (Dune)",
+    "description": "Filter events by title substring Dune",
+    "method": "GET",
+    "endpoint": "/api/event/getevents?title=Dune",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 270,
+    "requestBody": null,
+    "responseBody": {
+      "message": "The events",
+      "allevents": [
+        {
+          "id": 1,
+          "title": "Dune: Part Two",
+          "description": "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+          "releaseDate": "2024-03-01T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
+          "rating": 8.6,
+          "venueId": 2,
+          "createdAt": "2026-10-12T07:13:53.963Z",
+          "updatedAt": "2026-10-12T07:13:53.963Z"
+        },
+        {
+          "id": 2,
+          "title": "Dune: Part Two",
+          "description": "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+          "releaseDate": "2024-03-01T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
+          "rating": 8.6,
+          "venueId": 5,
+          "createdAt": "2026-10-12T07:13:54.502Z",
+          "updatedAt": "2026-10-12T07:13:54.502Z"
+        }
+      ]
+    }
+  },
+  {
+    "id": 36,
+    "name": "Event By ID - Valid ID (ID: 1)",
+    "description": "Fetch single event details by ID",
+    "method": "GET",
+    "endpoint": "/api/event/oneevent/1",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 297,
+    "requestBody": null,
+    "responseBody": {
+      "message": "The event",
+      "getevent": {
+        "id": 1,
+        "title": "Dune: Part Two",
+        "description": "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+        "releaseDate": "2024-03-01T00:00:00.000Z",
+        "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
+        "rating": 8.6,
+        "venueId": 2,
+        "createdAt": "2026-10-12T07:13:53.963Z",
+        "updatedAt": "2026-10-12T07:13:53.963Z"
+      }
+    }
+  },
+  {
+    "id": 37,
+    "name": "Event By ID - Invalid Format ID",
+    "description": "Fetch event using invalid alphanumeric ID \"bad_id\"",
+    "method": "GET",
+    "endpoint": "/api/event/oneevent/bad_id",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 3,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Invalid event ID"
+    }
+  },
+  {
+    "id": 38,
+    "name": "Event By ID - Non-existent ID",
+    "description": "Fetch event with non-existent ID 99999",
+    "method": "GET",
+    "endpoint": "/api/event/oneevent/99999",
+    "expectedStatus": 404,
+    "actualStatus": 404,
+    "passed": true,
+    "durationMs": 289,
+    "requestBody": null,
+    "responseBody": {
+      "message": "No event found"
+    }
+  },
+  {
+    "id": 39,
+    "name": "Event Update - Standard User Forbidden",
+    "description": "Standard user attempts updating event",
+    "method": "PATCH",
+    "endpoint": "/api/event/updateevent/15",
+    "expectedStatus": 403,
+    "actualStatus": 403,
+    "passed": true,
+    "durationMs": 8,
+    "requestBody": {
+      "rating": 9.9
+    },
+    "responseBody": {
+      "message": "Forbidden: Admin access required"
+    }
+  },
+  {
+    "id": 40,
+    "name": "Event Update - Admin Success",
+    "description": "Admin updates event rating and description",
+    "method": "PATCH",
+    "endpoint": "/api/event/updateevent/15",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 571,
+    "requestBody": {
+      "rating": 9.5,
+      "description": "Updated synopsis and timings."
+    },
+    "responseBody": {
+      "message": "The event updated",
+      "saveevent": {
+        "id": 15,
+        "title": "Avengers: Secret Wars Sneak Peek",
+        "description": "Updated synopsis and timings.",
+        "releaseDate": "2026-05-01T00:00:00.000Z",
+        "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401",
+        "rating": 9.5,
+        "venueId": 1,
+        "createdAt": "2026-10-14T06:17:01.140Z",
+        "updatedAt": "2026-10-14T06:17:03.411Z"
+      }
+    }
+  },
+  {
+    "id": 41,
+    "name": "Event Delete - Standard User Forbidden",
+    "description": "Standard user attempts deleting event",
+    "method": "DELETE",
+    "endpoint": "/api/event/deleteevent/15",
+    "expectedStatus": 403,
+    "actualStatus": 403,
+    "passed": true,
+    "durationMs": 3,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Forbidden: Admin access required"
+    }
+  },
+  {
+    "id": 42,
+    "name": "Event Delete - Admin Success",
+    "description": "Admin deletes temporary event",
+    "method": "DELETE",
+    "endpoint": "/api/event/deleteevent/15",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 807,
+    "requestBody": null,
+    "responseBody": {
+      "message": "The event deleted",
+      "deleteevent": {
+        "id": 15,
+        "title": "Avengers: Secret Wars Sneak Peek",
+        "description": "Updated synopsis and timings.",
+        "releaseDate": "2026-05-01T00:00:00.000Z",
+        "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401",
+        "rating": 9.5,
+        "venueId": 1,
+        "createdAt": "2026-10-14T06:17:01.140Z",
+        "updatedAt": "2026-10-14T06:17:03.411Z"
+      }
+    }
+  },
+  {
+    "id": 43,
+    "name": "Seat Base - Unauthenticated Access",
+    "description": "Attempt accessing /api/seat without JWT cookie (should return 401)",
+    "method": "GET",
+    "endpoint": "/api/seat/",
+    "expectedStatus": 401,
+    "actualStatus": 401,
+    "passed": true,
+    "durationMs": 16,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Access Denied"
+    }
+  },
+  {
+    "id": 44,
+    "name": "Seat Base - Authenticated Access",
+    "description": "Access /api/seat with valid JWT cookie",
+    "method": "GET",
+    "endpoint": "/api/seat/",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 15,
+    "requestBody": null,
+    "responseBody": "This is seatroute"
+  },
+  {
+    "id": 45,
+    "name": "Seat Batch Create - Standard User Forbidden",
+    "description": "Standard user attempts creating seats in venue 1",
+    "method": "POST",
+    "endpoint": "/api/seat/venues/1/seats",
+    "expectedStatus": 403,
+    "actualStatus": 403,
+    "passed": true,
+    "durationMs": 15,
+    "requestBody": {
+      "seats": [
+        {
+          "seatNumber": "TEST1",
+          "row": "Z",
+          "type": "FRONT"
+        }
+      ]
+    },
+    "responseBody": {
+      "message": "Forbidden: Admin access required"
+    }
+  },
+  {
+    "id": 46,
+    "name": "Seat Batch Create - Admin Empty Array Error",
+    "description": "Admin attempts creating empty seats array",
+    "method": "POST",
+    "endpoint": "/api/seat/venues/1/seats",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 15,
+    "requestBody": {
+      "seats": []
+    },
+    "responseBody": {
+      "message": "Please provide a non-empty array of seats"
+    }
+  },
+  {
+    "id": 47,
+    "name": "Seat Batch Create - Admin Incomplete Seat Object",
+    "description": "Admin attempts creating seat missing row and type",
+    "method": "POST",
+    "endpoint": "/api/seat/venues/1/seats",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 16,
+    "requestBody": {
+      "seats": [
+        {
+          "seatNumber": "INCOMPLETE"
+        }
+      ]
+    },
+    "responseBody": {
+      "message": "Seat data is incomplete"
+    }
+  },
+  {
+    "id": 48,
+    "name": "Seat Batch Create - Admin Valid",
+    "description": "Admin creates a temporary VIP test seat in venue 1",
+    "method": "POST",
+    "endpoint": "/api/seat/venues/1/seats",
+    "expectedStatus": 201,
+    "actualStatus": 201,
+    "passed": true,
+    "durationMs": 278,
+    "requestBody": {
+      "seats": [
+        {
+          "seatNumber": "TEMP_V1",
+          "row": "V",
+          "type": "LUXURY"
+        }
+      ]
+    },
+    "responseBody": {
+      "Message": "The seats are created successfully",
+      "createseats": {
+        "count": 1
+      }
+    }
+  },
+  {
+    "id": 49,
+    "name": "Venue Seats List - Valid Venue (Venue 1)",
+    "description": "Fetch all seats configured for Venue 1",
+    "method": "GET",
+    "endpoint": "/api/seat/venues/1/seats",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 823,
+    "requestBody": null,
+    "responseBody": {
+      "Message": "All seats for venue",
+      "seats": [
+        {
+          "id": 1,
+          "seatNumber": "A1",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 2,
+          "seatNumber": "A2",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 3,
+          "seatNumber": "A3",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 4,
+          "seatNumber": "A4",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 5,
+          "seatNumber": "A5",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 6,
+          "seatNumber": "A6",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 7,
+          "seatNumber": "A7",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 8,
+          "seatNumber": "A8",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 9,
+          "seatNumber": "A9",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 10,
+          "seatNumber": "A10",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 11,
+          "seatNumber": "A11",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 12,
+          "seatNumber": "A12",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 13,
+          "seatNumber": "A13",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 14,
+          "seatNumber": "A14",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 15,
+          "seatNumber": "A15",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 16,
+          "seatNumber": "A16",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 17,
+          "seatNumber": "A17",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 18,
+          "seatNumber": "A18",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 19,
+          "seatNumber": "A19",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 20,
+          "seatNumber": "A20",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 21,
+          "seatNumber": "B1",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 22,
+          "seatNumber": "B2",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 23,
+          "seatNumber": "B3",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 24,
+          "seatNumber": "B4",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 25,
+          "seatNumber": "B5",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 26,
+          "seatNumber": "B6",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 27,
+          "seatNumber": "B7",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 28,
+          "seatNumber": "B8",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 29,
+          "seatNumber": "B9",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 30,
+          "seatNumber": "B10",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 31,
+          "seatNumber": "B11",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 32,
+          "seatNumber": "B12",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 33,
+          "seatNumber": "B13",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 34,
+          "seatNumber": "B14",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 35,
+          "seatNumber": "B15",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 36,
+          "seatNumber": "B16",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 37,
+          "seatNumber": "B17",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 38,
+          "seatNumber": "B18",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 39,
+          "seatNumber": "B19",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 40,
+          "seatNumber": "B20",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 41,
+          "seatNumber": "C1",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 42,
+          "seatNumber": "C2",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 43,
+          "seatNumber": "C3",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 44,
+          "seatNumber": "C4",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 45,
+          "seatNumber": "C5",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 46,
+          "seatNumber": "C6",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 47,
+          "seatNumber": "C7",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 48,
+          "seatNumber": "C8",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 49,
+          "seatNumber": "C9",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 50,
+          "seatNumber": "C10",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 51,
+          "seatNumber": "C11",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 52,
+          "seatNumber": "C12",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 53,
+          "seatNumber": "C13",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 54,
+          "seatNumber": "C14",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 55,
+          "seatNumber": "C15",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 56,
+          "seatNumber": "C16",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 57,
+          "seatNumber": "C17",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 58,
+          "seatNumber": "C18",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 59,
+          "seatNumber": "C19",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 60,
+          "seatNumber": "C20",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 61,
+          "seatNumber": "C21",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 62,
+          "seatNumber": "C22",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 63,
+          "seatNumber": "C23",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 64,
+          "seatNumber": "C24",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 65,
+          "seatNumber": "C25",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 66,
+          "seatNumber": "D1",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 67,
+          "seatNumber": "D2",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 68,
+          "seatNumber": "D3",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 69,
+          "seatNumber": "D4",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 70,
+          "seatNumber": "D5",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 71,
+          "seatNumber": "D6",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 72,
+          "seatNumber": "D7",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 73,
+          "seatNumber": "D8",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 74,
+          "seatNumber": "D9",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 75,
+          "seatNumber": "D10",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 76,
+          "seatNumber": "D11",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 77,
+          "seatNumber": "D12",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 78,
+          "seatNumber": "D13",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 79,
+          "seatNumber": "D14",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 80,
+          "seatNumber": "D15",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 81,
+          "seatNumber": "D16",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 82,
+          "seatNumber": "D17",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 83,
+          "seatNumber": "D18",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 84,
+          "seatNumber": "D19",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 85,
+          "seatNumber": "D20",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 86,
+          "seatNumber": "D21",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 87,
+          "seatNumber": "D22",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 88,
+          "seatNumber": "D23",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 89,
+          "seatNumber": "D24",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 90,
+          "seatNumber": "D25",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 91,
+          "seatNumber": "E1",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 92,
+          "seatNumber": "E2",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 93,
+          "seatNumber": "E3",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 94,
+          "seatNumber": "E4",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 95,
+          "seatNumber": "E5",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 96,
+          "seatNumber": "E6",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 97,
+          "seatNumber": "E7",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 98,
+          "seatNumber": "E8",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 99,
+          "seatNumber": "E9",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 100,
+          "seatNumber": "E10",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 101,
+          "seatNumber": "E11",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 102,
+          "seatNumber": "E12",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 103,
+          "seatNumber": "E13",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 104,
+          "seatNumber": "E14",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 105,
+          "seatNumber": "E15",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 106,
+          "seatNumber": "E16",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 107,
+          "seatNumber": "E17",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 108,
+          "seatNumber": "E18",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 109,
+          "seatNumber": "E19",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 110,
+          "seatNumber": "E20",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 111,
+          "seatNumber": "E21",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 112,
+          "seatNumber": "E22",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 113,
+          "seatNumber": "E23",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 114,
+          "seatNumber": "E24",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 115,
+          "seatNumber": "E25",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 116,
+          "seatNumber": "F1",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 117,
+          "seatNumber": "F2",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 118,
+          "seatNumber": "F3",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 119,
+          "seatNumber": "F4",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 120,
+          "seatNumber": "F5",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 121,
+          "seatNumber": "F6",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 122,
+          "seatNumber": "F7",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 123,
+          "seatNumber": "F8",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 124,
+          "seatNumber": "F9",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 125,
+          "seatNumber": "F10",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 126,
+          "seatNumber": "F11",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 127,
+          "seatNumber": "F12",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 128,
+          "seatNumber": "F13",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 129,
+          "seatNumber": "F14",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 130,
+          "seatNumber": "F15",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 131,
+          "seatNumber": "F16",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 132,
+          "seatNumber": "F17",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 133,
+          "seatNumber": "F18",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 134,
+          "seatNumber": "F19",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 135,
+          "seatNumber": "F20",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 136,
+          "seatNumber": "F21",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 137,
+          "seatNumber": "F22",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 138,
+          "seatNumber": "F23",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 139,
+          "seatNumber": "F24",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 140,
+          "seatNumber": "F25",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 141,
+          "seatNumber": "G1",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 142,
+          "seatNumber": "G2",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 143,
+          "seatNumber": "G3",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 144,
+          "seatNumber": "G4",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 145,
+          "seatNumber": "G5",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 146,
+          "seatNumber": "G6",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 147,
+          "seatNumber": "G7",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 148,
+          "seatNumber": "G8",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 149,
+          "seatNumber": "G9",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 150,
+          "seatNumber": "G10",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 151,
+          "seatNumber": "G11",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 152,
+          "seatNumber": "G12",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 153,
+          "seatNumber": "G13",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 154,
+          "seatNumber": "G14",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 155,
+          "seatNumber": "G15",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 156,
+          "seatNumber": "G16",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 157,
+          "seatNumber": "G17",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 158,
+          "seatNumber": "G18",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 159,
+          "seatNumber": "G19",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 160,
+          "seatNumber": "G20",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 161,
+          "seatNumber": "G21",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 162,
+          "seatNumber": "G22",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 163,
+          "seatNumber": "G23",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 164,
+          "seatNumber": "G24",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 165,
+          "seatNumber": "G25",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 166,
+          "seatNumber": "H1",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 167,
+          "seatNumber": "H2",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 168,
+          "seatNumber": "H3",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 169,
+          "seatNumber": "H4",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 170,
+          "seatNumber": "H5",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 171,
+          "seatNumber": "H6",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 172,
+          "seatNumber": "H7",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 173,
+          "seatNumber": "H8",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 174,
+          "seatNumber": "H9",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 175,
+          "seatNumber": "H10",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 176,
+          "seatNumber": "H11",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 177,
+          "seatNumber": "H12",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 178,
+          "seatNumber": "H13",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 179,
+          "seatNumber": "H14",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 180,
+          "seatNumber": "H15",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 181,
+          "seatNumber": "H16",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 182,
+          "seatNumber": "H17",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 183,
+          "seatNumber": "H18",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 184,
+          "seatNumber": "H19",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 185,
+          "seatNumber": "H20",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 186,
+          "seatNumber": "H21",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 187,
+          "seatNumber": "H22",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 188,
+          "seatNumber": "H23",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 189,
+          "seatNumber": "H24",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 190,
+          "seatNumber": "H25",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 191,
+          "seatNumber": "I1",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 192,
+          "seatNumber": "I2",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 193,
+          "seatNumber": "I3",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 194,
+          "seatNumber": "I4",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 195,
+          "seatNumber": "I5",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 196,
+          "seatNumber": "I6",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 197,
+          "seatNumber": "I7",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 198,
+          "seatNumber": "I8",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 199,
+          "seatNumber": "I9",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 200,
+          "seatNumber": "I10",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 201,
+          "seatNumber": "I11",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 202,
+          "seatNumber": "I12",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 203,
+          "seatNumber": "I13",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 204,
+          "seatNumber": "I14",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 205,
+          "seatNumber": "I15",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 206,
+          "seatNumber": "I16",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 207,
+          "seatNumber": "I17",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 208,
+          "seatNumber": "I18",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 209,
+          "seatNumber": "I19",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 210,
+          "seatNumber": "I20",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 211,
+          "seatNumber": "I21",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 212,
+          "seatNumber": "I22",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 213,
+          "seatNumber": "I23",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 214,
+          "seatNumber": "I24",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 215,
+          "seatNumber": "I25",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 216,
+          "seatNumber": "J1",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 217,
+          "seatNumber": "J2",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 218,
+          "seatNumber": "J3",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 219,
+          "seatNumber": "J4",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 220,
+          "seatNumber": "J5",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 221,
+          "seatNumber": "J6",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 222,
+          "seatNumber": "J7",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 223,
+          "seatNumber": "J8",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 224,
+          "seatNumber": "J9",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 225,
+          "seatNumber": "J10",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 226,
+          "seatNumber": "J11",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 227,
+          "seatNumber": "J12",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 228,
+          "seatNumber": "J13",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 229,
+          "seatNumber": "J14",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 230,
+          "seatNumber": "J15",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 231,
+          "seatNumber": "J16",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 232,
+          "seatNumber": "J17",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 233,
+          "seatNumber": "J18",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 234,
+          "seatNumber": "J19",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 235,
+          "seatNumber": "J20",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 236,
+          "seatNumber": "J21",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 237,
+          "seatNumber": "J22",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 238,
+          "seatNumber": "J23",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 239,
+          "seatNumber": "J24",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 240,
+          "seatNumber": "J25",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 241,
+          "seatNumber": "K1",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 242,
+          "seatNumber": "K2",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 243,
+          "seatNumber": "K3",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 244,
+          "seatNumber": "K4",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 245,
+          "seatNumber": "K5",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 246,
+          "seatNumber": "K6",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 247,
+          "seatNumber": "K7",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 248,
+          "seatNumber": "K8",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 249,
+          "seatNumber": "K9",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 250,
+          "seatNumber": "K10",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 251,
+          "seatNumber": "K11",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 252,
+          "seatNumber": "K12",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 253,
+          "seatNumber": "K13",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 254,
+          "seatNumber": "K14",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 255,
+          "seatNumber": "K15",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 256,
+          "seatNumber": "K16",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 257,
+          "seatNumber": "K17",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 258,
+          "seatNumber": "K18",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 259,
+          "seatNumber": "K19",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 260,
+          "seatNumber": "K20",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 261,
+          "seatNumber": "K21",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 262,
+          "seatNumber": "K22",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 263,
+          "seatNumber": "K23",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 264,
+          "seatNumber": "K24",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 265,
+          "seatNumber": "K25",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 266,
+          "seatNumber": "K26",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 267,
+          "seatNumber": "K27",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 268,
+          "seatNumber": "K28",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 269,
+          "seatNumber": "K29",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 270,
+          "seatNumber": "K30",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 271,
+          "seatNumber": "L1",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 272,
+          "seatNumber": "L2",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 273,
+          "seatNumber": "L3",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 274,
+          "seatNumber": "L4",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 275,
+          "seatNumber": "L5",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 276,
+          "seatNumber": "L6",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 277,
+          "seatNumber": "L7",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 278,
+          "seatNumber": "L8",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 279,
+          "seatNumber": "L9",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 280,
+          "seatNumber": "L10",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 281,
+          "seatNumber": "L11",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 282,
+          "seatNumber": "L12",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 283,
+          "seatNumber": "L13",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 284,
+          "seatNumber": "L14",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 285,
+          "seatNumber": "L15",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 286,
+          "seatNumber": "L16",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 287,
+          "seatNumber": "L17",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 288,
+          "seatNumber": "L18",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 289,
+          "seatNumber": "L19",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 290,
+          "seatNumber": "L20",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 291,
+          "seatNumber": "L21",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 292,
+          "seatNumber": "L22",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 293,
+          "seatNumber": "L23",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 294,
+          "seatNumber": "L24",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 295,
+          "seatNumber": "L25",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 296,
+          "seatNumber": "L26",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 297,
+          "seatNumber": "L27",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 298,
+          "seatNumber": "L28",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 299,
+          "seatNumber": "L29",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 300,
+          "seatNumber": "L30",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 933,
+          "seatNumber": "TEMP_V1",
+          "row": "V",
+          "type": "LUXURY",
+          "venueId": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": 50,
+    "name": "Venue Seats List - Non-existent Venue",
+    "description": "Fetch seats for non-existent venue 99999",
+    "method": "GET",
+    "endpoint": "/api/seat/venues/99999/seats",
+    "expectedStatus": 404,
+    "actualStatus": 404,
+    "passed": true,
+    "durationMs": 295,
+    "requestBody": null,
+    "responseBody": {
+      "Message": "No venue Found"
+    }
+  },
+  {
+    "id": 51,
+    "name": "Query Single Seat Preparation",
+    "description": "Retrieve seat list to get a valid seat ID for single seat tests",
+    "method": "GET",
+    "endpoint": "/api/seat/venues/1/seats",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 1116,
+    "requestBody": null,
+    "responseBody": {
+      "Message": "All seats for venue",
+      "seats": [
+        {
+          "id": 1,
+          "seatNumber": "A1",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 2,
+          "seatNumber": "A2",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 3,
+          "seatNumber": "A3",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 4,
+          "seatNumber": "A4",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 5,
+          "seatNumber": "A5",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 6,
+          "seatNumber": "A6",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 7,
+          "seatNumber": "A7",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 8,
+          "seatNumber": "A8",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 9,
+          "seatNumber": "A9",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 10,
+          "seatNumber": "A10",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 11,
+          "seatNumber": "A11",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 12,
+          "seatNumber": "A12",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 13,
+          "seatNumber": "A13",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 14,
+          "seatNumber": "A14",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 15,
+          "seatNumber": "A15",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 16,
+          "seatNumber": "A16",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 17,
+          "seatNumber": "A17",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 18,
+          "seatNumber": "A18",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 19,
+          "seatNumber": "A19",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 20,
+          "seatNumber": "A20",
+          "row": "A",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 21,
+          "seatNumber": "B1",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 22,
+          "seatNumber": "B2",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 23,
+          "seatNumber": "B3",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 24,
+          "seatNumber": "B4",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 25,
+          "seatNumber": "B5",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 26,
+          "seatNumber": "B6",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 27,
+          "seatNumber": "B7",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 28,
+          "seatNumber": "B8",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 29,
+          "seatNumber": "B9",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 30,
+          "seatNumber": "B10",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 31,
+          "seatNumber": "B11",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 32,
+          "seatNumber": "B12",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 33,
+          "seatNumber": "B13",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 34,
+          "seatNumber": "B14",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 35,
+          "seatNumber": "B15",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 36,
+          "seatNumber": "B16",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 37,
+          "seatNumber": "B17",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 38,
+          "seatNumber": "B18",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 39,
+          "seatNumber": "B19",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 40,
+          "seatNumber": "B20",
+          "row": "B",
+          "type": "FRONT",
+          "venueId": 1
+        },
+        {
+          "id": 41,
+          "seatNumber": "C1",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 42,
+          "seatNumber": "C2",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 43,
+          "seatNumber": "C3",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 44,
+          "seatNumber": "C4",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 45,
+          "seatNumber": "C5",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 46,
+          "seatNumber": "C6",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 47,
+          "seatNumber": "C7",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 48,
+          "seatNumber": "C8",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 49,
+          "seatNumber": "C9",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 50,
+          "seatNumber": "C10",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 51,
+          "seatNumber": "C11",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 52,
+          "seatNumber": "C12",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 53,
+          "seatNumber": "C13",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 54,
+          "seatNumber": "C14",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 55,
+          "seatNumber": "C15",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 56,
+          "seatNumber": "C16",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 57,
+          "seatNumber": "C17",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 58,
+          "seatNumber": "C18",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 59,
+          "seatNumber": "C19",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 60,
+          "seatNumber": "C20",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 61,
+          "seatNumber": "C21",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 62,
+          "seatNumber": "C22",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 63,
+          "seatNumber": "C23",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 64,
+          "seatNumber": "C24",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 65,
+          "seatNumber": "C25",
+          "row": "C",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 66,
+          "seatNumber": "D1",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 67,
+          "seatNumber": "D2",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 68,
+          "seatNumber": "D3",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 69,
+          "seatNumber": "D4",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 70,
+          "seatNumber": "D5",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 71,
+          "seatNumber": "D6",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 72,
+          "seatNumber": "D7",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 73,
+          "seatNumber": "D8",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 74,
+          "seatNumber": "D9",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 75,
+          "seatNumber": "D10",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 76,
+          "seatNumber": "D11",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 77,
+          "seatNumber": "D12",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 78,
+          "seatNumber": "D13",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 79,
+          "seatNumber": "D14",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 80,
+          "seatNumber": "D15",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 81,
+          "seatNumber": "D16",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 82,
+          "seatNumber": "D17",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 83,
+          "seatNumber": "D18",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 84,
+          "seatNumber": "D19",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 85,
+          "seatNumber": "D20",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 86,
+          "seatNumber": "D21",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 87,
+          "seatNumber": "D22",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 88,
+          "seatNumber": "D23",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 89,
+          "seatNumber": "D24",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 90,
+          "seatNumber": "D25",
+          "row": "D",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 91,
+          "seatNumber": "E1",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 92,
+          "seatNumber": "E2",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 93,
+          "seatNumber": "E3",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 94,
+          "seatNumber": "E4",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 95,
+          "seatNumber": "E5",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 96,
+          "seatNumber": "E6",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 97,
+          "seatNumber": "E7",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 98,
+          "seatNumber": "E8",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 99,
+          "seatNumber": "E9",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 100,
+          "seatNumber": "E10",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 101,
+          "seatNumber": "E11",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 102,
+          "seatNumber": "E12",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 103,
+          "seatNumber": "E13",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 104,
+          "seatNumber": "E14",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 105,
+          "seatNumber": "E15",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 106,
+          "seatNumber": "E16",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 107,
+          "seatNumber": "E17",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 108,
+          "seatNumber": "E18",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 109,
+          "seatNumber": "E19",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 110,
+          "seatNumber": "E20",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 111,
+          "seatNumber": "E21",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 112,
+          "seatNumber": "E22",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 113,
+          "seatNumber": "E23",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 114,
+          "seatNumber": "E24",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 115,
+          "seatNumber": "E25",
+          "row": "E",
+          "type": "SILVER",
+          "venueId": 1
+        },
+        {
+          "id": 116,
+          "seatNumber": "F1",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 117,
+          "seatNumber": "F2",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 118,
+          "seatNumber": "F3",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 119,
+          "seatNumber": "F4",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 120,
+          "seatNumber": "F5",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 121,
+          "seatNumber": "F6",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 122,
+          "seatNumber": "F7",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 123,
+          "seatNumber": "F8",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 124,
+          "seatNumber": "F9",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 125,
+          "seatNumber": "F10",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 126,
+          "seatNumber": "F11",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 127,
+          "seatNumber": "F12",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 128,
+          "seatNumber": "F13",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 129,
+          "seatNumber": "F14",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 130,
+          "seatNumber": "F15",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 131,
+          "seatNumber": "F16",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 132,
+          "seatNumber": "F17",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 133,
+          "seatNumber": "F18",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 134,
+          "seatNumber": "F19",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 135,
+          "seatNumber": "F20",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 136,
+          "seatNumber": "F21",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 137,
+          "seatNumber": "F22",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 138,
+          "seatNumber": "F23",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 139,
+          "seatNumber": "F24",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 140,
+          "seatNumber": "F25",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 141,
+          "seatNumber": "G1",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 142,
+          "seatNumber": "G2",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 143,
+          "seatNumber": "G3",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 144,
+          "seatNumber": "G4",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 145,
+          "seatNumber": "G5",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 146,
+          "seatNumber": "G6",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 147,
+          "seatNumber": "G7",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 148,
+          "seatNumber": "G8",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 149,
+          "seatNumber": "G9",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 150,
+          "seatNumber": "G10",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 151,
+          "seatNumber": "G11",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 152,
+          "seatNumber": "G12",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 153,
+          "seatNumber": "G13",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 154,
+          "seatNumber": "G14",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 155,
+          "seatNumber": "G15",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 156,
+          "seatNumber": "G16",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 157,
+          "seatNumber": "G17",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 158,
+          "seatNumber": "G18",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 159,
+          "seatNumber": "G19",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 160,
+          "seatNumber": "G20",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 161,
+          "seatNumber": "G21",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 162,
+          "seatNumber": "G22",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 163,
+          "seatNumber": "G23",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 164,
+          "seatNumber": "G24",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 165,
+          "seatNumber": "G25",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 166,
+          "seatNumber": "H1",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 167,
+          "seatNumber": "H2",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 168,
+          "seatNumber": "H3",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 169,
+          "seatNumber": "H4",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 170,
+          "seatNumber": "H5",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 171,
+          "seatNumber": "H6",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 172,
+          "seatNumber": "H7",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 173,
+          "seatNumber": "H8",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 174,
+          "seatNumber": "H9",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 175,
+          "seatNumber": "H10",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 176,
+          "seatNumber": "H11",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 177,
+          "seatNumber": "H12",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 178,
+          "seatNumber": "H13",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 179,
+          "seatNumber": "H14",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 180,
+          "seatNumber": "H15",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 181,
+          "seatNumber": "H16",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 182,
+          "seatNumber": "H17",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 183,
+          "seatNumber": "H18",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 184,
+          "seatNumber": "H19",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 185,
+          "seatNumber": "H20",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 186,
+          "seatNumber": "H21",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 187,
+          "seatNumber": "H22",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 188,
+          "seatNumber": "H23",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 189,
+          "seatNumber": "H24",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 190,
+          "seatNumber": "H25",
+          "row": "H",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 191,
+          "seatNumber": "I1",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 192,
+          "seatNumber": "I2",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 193,
+          "seatNumber": "I3",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 194,
+          "seatNumber": "I4",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 195,
+          "seatNumber": "I5",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 196,
+          "seatNumber": "I6",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 197,
+          "seatNumber": "I7",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 198,
+          "seatNumber": "I8",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 199,
+          "seatNumber": "I9",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 200,
+          "seatNumber": "I10",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 201,
+          "seatNumber": "I11",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 202,
+          "seatNumber": "I12",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 203,
+          "seatNumber": "I13",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 204,
+          "seatNumber": "I14",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 205,
+          "seatNumber": "I15",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 206,
+          "seatNumber": "I16",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 207,
+          "seatNumber": "I17",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 208,
+          "seatNumber": "I18",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 209,
+          "seatNumber": "I19",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 210,
+          "seatNumber": "I20",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 211,
+          "seatNumber": "I21",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 212,
+          "seatNumber": "I22",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 213,
+          "seatNumber": "I23",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 214,
+          "seatNumber": "I24",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 215,
+          "seatNumber": "I25",
+          "row": "I",
+          "type": "GOLD",
+          "venueId": 1
+        },
+        {
+          "id": 216,
+          "seatNumber": "J1",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 217,
+          "seatNumber": "J2",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 218,
+          "seatNumber": "J3",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 219,
+          "seatNumber": "J4",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 220,
+          "seatNumber": "J5",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 221,
+          "seatNumber": "J6",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 222,
+          "seatNumber": "J7",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 223,
+          "seatNumber": "J8",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 224,
+          "seatNumber": "J9",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 225,
+          "seatNumber": "J10",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 226,
+          "seatNumber": "J11",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 227,
+          "seatNumber": "J12",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 228,
+          "seatNumber": "J13",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 229,
+          "seatNumber": "J14",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 230,
+          "seatNumber": "J15",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 231,
+          "seatNumber": "J16",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 232,
+          "seatNumber": "J17",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 233,
+          "seatNumber": "J18",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 234,
+          "seatNumber": "J19",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 235,
+          "seatNumber": "J20",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 236,
+          "seatNumber": "J21",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 237,
+          "seatNumber": "J22",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 238,
+          "seatNumber": "J23",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 239,
+          "seatNumber": "J24",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 240,
+          "seatNumber": "J25",
+          "row": "J",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 241,
+          "seatNumber": "K1",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 242,
+          "seatNumber": "K2",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 243,
+          "seatNumber": "K3",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 244,
+          "seatNumber": "K4",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 245,
+          "seatNumber": "K5",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 246,
+          "seatNumber": "K6",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 247,
+          "seatNumber": "K7",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 248,
+          "seatNumber": "K8",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 249,
+          "seatNumber": "K9",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 250,
+          "seatNumber": "K10",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 251,
+          "seatNumber": "K11",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 252,
+          "seatNumber": "K12",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 253,
+          "seatNumber": "K13",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 254,
+          "seatNumber": "K14",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 255,
+          "seatNumber": "K15",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 256,
+          "seatNumber": "K16",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 257,
+          "seatNumber": "K17",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 258,
+          "seatNumber": "K18",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 259,
+          "seatNumber": "K19",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 260,
+          "seatNumber": "K20",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 261,
+          "seatNumber": "K21",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 262,
+          "seatNumber": "K22",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 263,
+          "seatNumber": "K23",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 264,
+          "seatNumber": "K24",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 265,
+          "seatNumber": "K25",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 266,
+          "seatNumber": "K26",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 267,
+          "seatNumber": "K27",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 268,
+          "seatNumber": "K28",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 269,
+          "seatNumber": "K29",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 270,
+          "seatNumber": "K30",
+          "row": "K",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 271,
+          "seatNumber": "L1",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 272,
+          "seatNumber": "L2",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 273,
+          "seatNumber": "L3",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 274,
+          "seatNumber": "L4",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 275,
+          "seatNumber": "L5",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 276,
+          "seatNumber": "L6",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 277,
+          "seatNumber": "L7",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 278,
+          "seatNumber": "L8",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 279,
+          "seatNumber": "L9",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 280,
+          "seatNumber": "L10",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 281,
+          "seatNumber": "L11",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 282,
+          "seatNumber": "L12",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 283,
+          "seatNumber": "L13",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 284,
+          "seatNumber": "L14",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 285,
+          "seatNumber": "L15",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 286,
+          "seatNumber": "L16",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 287,
+          "seatNumber": "L17",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 288,
+          "seatNumber": "L18",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 289,
+          "seatNumber": "L19",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 290,
+          "seatNumber": "L20",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 291,
+          "seatNumber": "L21",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 292,
+          "seatNumber": "L22",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 293,
+          "seatNumber": "L23",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 294,
+          "seatNumber": "L24",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 295,
+          "seatNumber": "L25",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 296,
+          "seatNumber": "L26",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 297,
+          "seatNumber": "L27",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 298,
+          "seatNumber": "L28",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 299,
+          "seatNumber": "L29",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 300,
+          "seatNumber": "L30",
+          "row": "L",
+          "type": "PLATINUM",
+          "venueId": 1
+        },
+        {
+          "id": 933,
+          "seatNumber": "TEMP_V1",
+          "row": "V",
+          "type": "LUXURY",
+          "venueId": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": 52,
+    "name": "Seat By ID - Valid ID",
+    "description": "Fetch seat details for seat ID: 933",
+    "method": "GET",
+    "endpoint": "/api/seat/seats/933",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 269,
+    "requestBody": null,
+    "responseBody": {
+      "Message": "seat",
+      "getseat": {
+        "id": 933,
+        "seatNumber": "TEMP_V1",
+        "row": "V",
+        "type": "LUXURY",
+        "venueId": 1
+      }
+    }
+  },
+  {
+    "id": 53,
+    "name": "Seat By ID - Invalid Format ID",
+    "description": "Fetch seat with invalid ID string \"xyz\"",
+    "method": "GET",
+    "endpoint": "/api/seat/seats/xyz",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 16,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Invalid seat ID"
+    }
+  },
+  {
+    "id": 54,
+    "name": "Seat By ID - Non-existent ID",
+    "description": "Fetch seat with non-existent ID 999999",
+    "method": "GET",
+    "endpoint": "/api/seat/seats/999999",
+    "expectedStatus": 404,
+    "actualStatus": 404,
+    "passed": true,
+    "durationMs": 298,
+    "requestBody": null,
+    "responseBody": {
+      "Message": "No seat Found"
+    }
+  },
+  {
+    "id": 55,
+    "name": "Seat Update - Standard User Forbidden",
+    "description": "Standard user attempts updating seat",
+    "method": "PATCH",
+    "endpoint": "/api/seat/seats/933",
+    "expectedStatus": 403,
+    "actualStatus": 403,
+    "passed": true,
+    "durationMs": 4,
+    "requestBody": {
+      "type": "GOLD"
+    },
+    "responseBody": {
+      "message": "Forbidden: Admin access required"
+    }
+  },
+  {
+    "id": 56,
+    "name": "Seat Update - Admin Empty Body",
+    "description": "Admin attempts updating seat with empty payload",
+    "method": "PATCH",
+    "endpoint": "/api/seat/seats/933",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 328,
+    "requestBody": {},
+    "responseBody": {
+      "message": "No valid fields provided for update"
+    }
+  },
+  {
+    "id": 57,
+    "name": "Seat Update - Admin Success",
+    "description": "Admin updates seat type to PLATINUM",
+    "method": "PATCH",
+    "endpoint": "/api/seat/seats/933",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 545,
+    "requestBody": {
+      "type": "PLATINUM"
+    },
+    "responseBody": {
+      "Message": "seat updated",
+      "updateseat": {
+        "id": 933,
+        "seatNumber": "TEMP_V1",
+        "row": "V",
+        "type": "PLATINUM",
+        "venueId": 1
+      }
+    }
+  },
+  {
+    "id": 58,
+    "name": "Seat Delete - Standard User Forbidden",
+    "description": "Standard user attempts deleting seat",
+    "method": "DELETE",
+    "endpoint": "/api/seat/seats/933",
+    "expectedStatus": 403,
+    "actualStatus": 403,
+    "passed": true,
+    "durationMs": 4,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Forbidden: Admin access required"
+    }
+  },
+  {
+    "id": 59,
+    "name": "Seat Delete - Admin Success",
+    "description": "Admin deletes temporary test seat",
+    "method": "DELETE",
+    "endpoint": "/api/seat/seats/933",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 550,
+    "requestBody": null,
+    "responseBody": {
+      "Message": "seat deleted",
+      "deleteseat": {
+        "id": 933,
+        "seatNumber": "TEMP_V1",
+        "row": "V",
+        "type": "PLATINUM",
+        "venueId": 1
+      }
+    }
+  },
+  {
+    "id": 60,
+    "name": "Booking - Unauthenticated User",
+    "description": "Attempt to access booking base route without auth",
+    "method": "GET",
+    "endpoint": "/api/booking/",
+    "expectedStatus": 401,
+    "actualStatus": 401,
+    "passed": true,
+    "durationMs": 15,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Access Denied"
+    }
+  },
+  {
+    "id": 61,
+    "name": "Booking - Authenticated User Base",
+    "description": "Access booking base route with normal user cookies",
+    "method": "GET",
+    "endpoint": "/api/booking/",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 3,
+    "requestBody": null,
+    "responseBody": "This is booking route"
+  },
+  {
+    "id": 62,
+    "name": "Booking - Current User Profile /auth/me",
+    "description": "Verify /auth/me retrieves current logged-in user profile",
+    "method": "GET",
+    "endpoint": "/auth/me",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 287,
+    "requestBody": null,
+    "responseBody": {
+      "message": "User profile fetched",
+      "user": {
+        "id": 1,
+        "email": "mayurawari50@gmail.com",
+        "name": "Mayur Awari",
+        "role": "USER",
+        "createdAt": "2026-10-07T08:16:35.611Z"
+      }
+    }
+  },
+  {
+    "id": 63,
+    "name": "Booking - Create Without Required Fields",
+    "description": "Attempt to create booking without eventId and seatId",
+    "method": "POST",
+    "endpoint": "/api/booking/createbooking",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 4,
+    "requestBody": {},
+    "responseBody": {
+      "message": "Valid eventId is required"
+    }
+  },
+  {
+    "id": 64,
+    "name": "Booking - Fetch Event Details",
+    "description": "Get event 1 details to locate valid venue seats",
+    "method": "GET",
+    "endpoint": "/api/event/oneevent/1",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 280,
+    "requestBody": null,
+    "responseBody": {
+      "message": "The event",
+      "getevent": {
+        "id": 1,
+        "title": "Dune: Part Two",
+        "description": "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+        "releaseDate": "2024-03-01T00:00:00.000Z",
+        "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
+        "rating": 8.6,
+        "venueId": 2,
+        "createdAt": "2026-10-12T07:13:53.963Z",
+        "updatedAt": "2026-10-12T07:13:53.963Z"
+      }
+    }
+  },
+  {
+    "id": 65,
+    "name": "Booking - Fetch Venue Seats",
+    "description": "Get seats for venue #2",
+    "method": "GET",
+    "endpoint": "/api/seat/venues/2/seats",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 560,
+    "requestBody": null,
+    "responseBody": {
+      "Message": "All seats for venue",
+      "seats": [
+        {
+          "id": 301,
+          "seatNumber": "A1",
+          "row": "A",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 302,
+          "seatNumber": "A2",
+          "row": "A",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 303,
+          "seatNumber": "A3",
+          "row": "A",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 304,
+          "seatNumber": "A4",
+          "row": "A",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 305,
+          "seatNumber": "A5",
+          "row": "A",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 306,
+          "seatNumber": "A6",
+          "row": "A",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 307,
+          "seatNumber": "A7",
+          "row": "A",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 308,
+          "seatNumber": "A8",
+          "row": "A",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 309,
+          "seatNumber": "A9",
+          "row": "A",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 310,
+          "seatNumber": "A10",
+          "row": "A",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 311,
+          "seatNumber": "A11",
+          "row": "A",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 312,
+          "seatNumber": "A12",
+          "row": "A",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 313,
+          "seatNumber": "B1",
+          "row": "B",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 314,
+          "seatNumber": "B2",
+          "row": "B",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 315,
+          "seatNumber": "B3",
+          "row": "B",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 316,
+          "seatNumber": "B4",
+          "row": "B",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 317,
+          "seatNumber": "B5",
+          "row": "B",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 318,
+          "seatNumber": "B6",
+          "row": "B",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 319,
+          "seatNumber": "B7",
+          "row": "B",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 320,
+          "seatNumber": "B8",
+          "row": "B",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 321,
+          "seatNumber": "B9",
+          "row": "B",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 322,
+          "seatNumber": "B10",
+          "row": "B",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 323,
+          "seatNumber": "B11",
+          "row": "B",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 324,
+          "seatNumber": "B12",
+          "row": "B",
+          "type": "LUXURY",
+          "venueId": 2
+        },
+        {
+          "id": 325,
+          "seatNumber": "C1",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 326,
+          "seatNumber": "C2",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 327,
+          "seatNumber": "C3",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 328,
+          "seatNumber": "C4",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 329,
+          "seatNumber": "C5",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 330,
+          "seatNumber": "C6",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 331,
+          "seatNumber": "C7",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 332,
+          "seatNumber": "C8",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 333,
+          "seatNumber": "C9",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 334,
+          "seatNumber": "C10",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 335,
+          "seatNumber": "C11",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 336,
+          "seatNumber": "C12",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 337,
+          "seatNumber": "C13",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 338,
+          "seatNumber": "C14",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 339,
+          "seatNumber": "C15",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 340,
+          "seatNumber": "C16",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 341,
+          "seatNumber": "C17",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 342,
+          "seatNumber": "C18",
+          "row": "C",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 343,
+          "seatNumber": "D1",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 344,
+          "seatNumber": "D2",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 345,
+          "seatNumber": "D3",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 346,
+          "seatNumber": "D4",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 347,
+          "seatNumber": "D5",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 348,
+          "seatNumber": "D6",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 349,
+          "seatNumber": "D7",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 350,
+          "seatNumber": "D8",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 351,
+          "seatNumber": "D9",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 352,
+          "seatNumber": "D10",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 353,
+          "seatNumber": "D11",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 354,
+          "seatNumber": "D12",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 355,
+          "seatNumber": "D13",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 356,
+          "seatNumber": "D14",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 357,
+          "seatNumber": "D15",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 358,
+          "seatNumber": "D16",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 359,
+          "seatNumber": "D17",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 360,
+          "seatNumber": "D18",
+          "row": "D",
+          "type": "PLATINUM",
+          "venueId": 2
+        },
+        {
+          "id": 361,
+          "seatNumber": "E1",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 362,
+          "seatNumber": "E2",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 363,
+          "seatNumber": "E3",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 364,
+          "seatNumber": "E4",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 365,
+          "seatNumber": "E5",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 366,
+          "seatNumber": "E6",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 367,
+          "seatNumber": "E7",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 368,
+          "seatNumber": "E8",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 369,
+          "seatNumber": "E9",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 370,
+          "seatNumber": "E10",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 371,
+          "seatNumber": "E11",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 372,
+          "seatNumber": "E12",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 373,
+          "seatNumber": "E13",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 374,
+          "seatNumber": "E14",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 375,
+          "seatNumber": "E15",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 376,
+          "seatNumber": "E16",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 377,
+          "seatNumber": "E17",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 378,
+          "seatNumber": "E18",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 379,
+          "seatNumber": "E19",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 380,
+          "seatNumber": "E20",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 381,
+          "seatNumber": "E21",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 382,
+          "seatNumber": "E22",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 383,
+          "seatNumber": "E23",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 384,
+          "seatNumber": "E24",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 385,
+          "seatNumber": "E25",
+          "row": "E",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 386,
+          "seatNumber": "F1",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 387,
+          "seatNumber": "F2",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 388,
+          "seatNumber": "F3",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 389,
+          "seatNumber": "F4",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 390,
+          "seatNumber": "F5",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 391,
+          "seatNumber": "F6",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 392,
+          "seatNumber": "F7",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 393,
+          "seatNumber": "F8",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 394,
+          "seatNumber": "F9",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 395,
+          "seatNumber": "F10",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 396,
+          "seatNumber": "F11",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 397,
+          "seatNumber": "F12",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 398,
+          "seatNumber": "F13",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 399,
+          "seatNumber": "F14",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 400,
+          "seatNumber": "F15",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 401,
+          "seatNumber": "F16",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 402,
+          "seatNumber": "F17",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 403,
+          "seatNumber": "F18",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 404,
+          "seatNumber": "F19",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 405,
+          "seatNumber": "F20",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 406,
+          "seatNumber": "F21",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 407,
+          "seatNumber": "F22",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 408,
+          "seatNumber": "F23",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 409,
+          "seatNumber": "F24",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 410,
+          "seatNumber": "F25",
+          "row": "F",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 411,
+          "seatNumber": "G1",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 412,
+          "seatNumber": "G2",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 413,
+          "seatNumber": "G3",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 414,
+          "seatNumber": "G4",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 415,
+          "seatNumber": "G5",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 416,
+          "seatNumber": "G6",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 417,
+          "seatNumber": "G7",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 418,
+          "seatNumber": "G8",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 419,
+          "seatNumber": "G9",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 420,
+          "seatNumber": "G10",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 421,
+          "seatNumber": "G11",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 422,
+          "seatNumber": "G12",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 423,
+          "seatNumber": "G13",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 424,
+          "seatNumber": "G14",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 425,
+          "seatNumber": "G15",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 426,
+          "seatNumber": "G16",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 427,
+          "seatNumber": "G17",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 428,
+          "seatNumber": "G18",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 429,
+          "seatNumber": "G19",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 430,
+          "seatNumber": "G20",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 431,
+          "seatNumber": "G21",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 432,
+          "seatNumber": "G22",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 433,
+          "seatNumber": "G23",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 434,
+          "seatNumber": "G24",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 435,
+          "seatNumber": "G25",
+          "row": "G",
+          "type": "GOLD",
+          "venueId": 2
+        },
+        {
+          "id": 436,
+          "seatNumber": "H1",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 437,
+          "seatNumber": "H2",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 438,
+          "seatNumber": "H3",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 439,
+          "seatNumber": "H4",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 440,
+          "seatNumber": "H5",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 441,
+          "seatNumber": "H6",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 442,
+          "seatNumber": "H7",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 443,
+          "seatNumber": "H8",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 444,
+          "seatNumber": "H9",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 445,
+          "seatNumber": "H10",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 446,
+          "seatNumber": "H11",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 447,
+          "seatNumber": "H12",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 448,
+          "seatNumber": "H13",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 449,
+          "seatNumber": "H14",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 450,
+          "seatNumber": "H15",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 451,
+          "seatNumber": "H16",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 452,
+          "seatNumber": "H17",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 453,
+          "seatNumber": "H18",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 454,
+          "seatNumber": "H19",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 455,
+          "seatNumber": "H20",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 456,
+          "seatNumber": "H21",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 457,
+          "seatNumber": "H22",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 458,
+          "seatNumber": "H23",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 459,
+          "seatNumber": "H24",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        },
+        {
+          "id": 460,
+          "seatNumber": "H25",
+          "row": "H",
+          "type": "SILVER",
+          "venueId": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": 66,
+    "name": "Booking - Create Booking Success",
+    "description": "Normal user creates booking for event 1 and seat 301",
+    "method": "POST",
+    "endpoint": "/api/booking/createbooking",
+    "expectedStatus": 201,
+    "actualStatus": 201,
+    "passed": true,
+    "durationMs": 3119,
+    "requestBody": {
+      "eventId": 1,
+      "seatId": 301,
+      "totalAmount": 250
+    },
+    "responseBody": {
+      "message": "Booking created successfully",
+      "booking": {
+        "id": 1,
+        "status": "CONFIRMED",
+        "totalAmount": 250,
+        "userId": 1,
+        "eventId": 1,
+        "seatId": 301,
+        "createdAt": "2026-10-14T06:17:11.643Z",
+        "updatedAt": "2026-10-14T06:17:11.643Z",
+        "event": {
+          "id": 1,
+          "title": "Dune: Part Two",
+          "releaseDate": "2024-03-01T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
+          "venue": {
+            "id": 2,
+            "name": "PVR ICON: Phoenix Palladium",
+            "city": "Mumbai",
+            "address": "462, Senapati Bapat Marg, Lower Parel, Mumbai, Maharashtra 400013"
+          }
+        },
+        "seat": {
+          "id": 301,
+          "seatNumber": "A1",
+          "row": "A",
+          "type": "LUXURY"
+        }
+      }
+    }
+  },
+  {
+    "id": 67,
+    "name": "Booking - Duplicate Booking Conflict",
+    "description": "Attempt to book the exact same seat again (should return 409)",
+    "method": "POST",
+    "endpoint": "/api/booking/createbooking",
+    "expectedStatus": 409,
+    "actualStatus": 409,
+    "passed": true,
+    "durationMs": 1070,
+    "requestBody": {
+      "eventId": 1,
+      "seatId": 301
+    },
+    "responseBody": {
+      "message": "This seat has already been booked for this event"
+    }
+  },
+  {
+    "id": 68,
+    "name": "Booking - Get My Bookings",
+    "description": "Normal user retrieves list of their bookings",
+    "method": "GET",
+    "endpoint": "/api/booking/mybookings",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 2795,
+    "requestBody": null,
+    "responseBody": {
+      "message": "User bookings fetched successfully",
+      "bookings": [
+        {
+          "id": 1,
+          "status": "CONFIRMED",
+          "totalAmount": 250,
+          "userId": 1,
+          "eventId": 1,
+          "seatId": 301,
+          "createdAt": "2026-10-14T06:17:11.643Z",
+          "updatedAt": "2026-10-14T06:17:11.643Z",
+          "event": {
+            "id": 1,
+            "title": "Dune: Part Two",
+            "description": "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+            "releaseDate": "2024-03-01T00:00:00.000Z",
+            "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
+            "rating": 8.6,
+            "venueId": 2,
+            "createdAt": "2026-10-12T07:13:53.963Z",
+            "updatedAt": "2026-10-12T07:13:53.963Z",
+            "venue": {
+              "id": 2,
+              "name": "PVR ICON: Phoenix Palladium",
+              "address": "462, Senapati Bapat Marg, Lower Parel, Mumbai, Maharashtra 400013",
+              "city": "Mumbai",
+              "type": "MULTIPLEX",
+              "totalSeats": 160,
+              "totalScreens": 5,
+              "createdAt": "2026-10-12T07:13:49.563Z",
+              "updatedAt": "2026-10-12T07:13:49.563Z"
+            }
+          },
+          "seat": {
+            "id": 301,
+            "seatNumber": "A1",
+            "row": "A",
+            "type": "LUXURY",
+            "venueId": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": 69,
+    "name": "Booking - Get Booked Seats for Event",
+    "description": "Fetch booked seats list for event 1",
+    "method": "GET",
+    "endpoint": "/api/booking/event/1/booked-seats",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 552,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Booked seats fetched",
+      "bookedSeats": [
+        {
+          "seatId": 301,
+          "status": "CONFIRMED",
+          "seat": {
+            "seatNumber": "A1",
+            "row": "A",
+            "type": "LUXURY"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": 70,
+    "name": "Booking - Get One Booking By ID",
+    "description": "Fetch specific booking details by ID",
+    "method": "GET",
+    "endpoint": "/api/booking/onebooking/1",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 2205,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Booking details fetched",
+      "booking": {
+        "id": 1,
+        "status": "CONFIRMED",
+        "totalAmount": 250,
+        "userId": 1,
+        "eventId": 1,
+        "seatId": 301,
+        "createdAt": "2026-10-14T06:17:11.643Z",
+        "updatedAt": "2026-10-14T06:17:11.643Z",
+        "user": {
+          "id": 1,
+          "name": "Mayur Awari",
+          "email": "mayurawari50@gmail.com"
+        },
+        "event": {
+          "id": 1,
+          "title": "Dune: Part Two",
+          "description": "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+          "releaseDate": "2024-03-01T00:00:00.000Z",
+          "poster": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
+          "rating": 8.6,
+          "venueId": 2,
+          "createdAt": "2026-10-12T07:13:53.963Z",
+          "updatedAt": "2026-10-12T07:13:53.963Z",
+          "venue": {
+            "id": 2,
+            "name": "PVR ICON: Phoenix Palladium",
+            "address": "462, Senapati Bapat Marg, Lower Parel, Mumbai, Maharashtra 400013",
+            "city": "Mumbai",
+            "type": "MULTIPLEX",
+            "totalSeats": 160,
+            "totalScreens": 5,
+            "createdAt": "2026-10-12T07:13:49.563Z",
+            "updatedAt": "2026-10-12T07:13:49.563Z"
+          }
+        },
+        "seat": {
+          "id": 301,
+          "seatNumber": "A1",
+          "row": "A",
+          "type": "LUXURY",
+          "venueId": 2
+        }
+      }
+    }
+  },
+  {
+    "id": 71,
+    "name": "Booking - Cancel Booking Success",
+    "description": "User cancels their confirmed booking",
+    "method": "PATCH",
+    "endpoint": "/api/booking/cancelbooking/1",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 2205,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Booking cancelled successfully",
+      "booking": {
+        "id": 1,
+        "status": "CANCELLED",
+        "totalAmount": 250,
+        "userId": 1,
+        "eventId": 1,
+        "seatId": 301,
+        "createdAt": "2026-10-14T06:17:11.643Z",
+        "updatedAt": "2026-10-14T06:17:20.571Z",
+        "event": {
+          "title": "Dune: Part Two"
+        },
+        "seat": {
+          "seatNumber": "A1",
+          "row": "A"
+        }
+      }
+    }
+  },
+  {
+    "id": 72,
+    "name": "Booking - Cancel Already Cancelled Booking",
+    "description": "Attempt to cancel already cancelled booking (should return 400)",
+    "method": "PATCH",
+    "endpoint": "/api/booking/cancelbooking/1",
+    "expectedStatus": 400,
+    "actualStatus": 400,
+    "passed": true,
+    "durationMs": 284,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Booking is already cancelled"
+    }
+  },
+  {
+    "id": 73,
+    "name": "Booking - Admin All Bookings",
+    "description": "Admin fetches all bookings across system",
+    "method": "GET",
+    "endpoint": "/api/booking/allbookings",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 840,
+    "requestBody": null,
+    "responseBody": {
+      "message": "All bookings fetched",
+      "count": 1,
+      "bookings": [
+        {
+          "id": 1,
+          "status": "CANCELLED",
+          "totalAmount": 250,
+          "userId": 1,
+          "eventId": 1,
+          "seatId": 301,
+          "createdAt": "2026-10-14T06:17:11.643Z",
+          "updatedAt": "2026-10-14T06:17:20.571Z",
+          "user": {
+            "id": 1,
+            "name": "Mayur Awari",
+            "email": "mayurawari50@gmail.com"
+          },
+          "event": {
+            "id": 1,
+            "title": "Dune: Part Two",
+            "venue": {
+              "name": "PVR ICON: Phoenix Palladium",
+              "city": "Mumbai"
+            }
+          },
+          "seat": {
+            "seatNumber": "A1",
+            "row": "A",
+            "type": "LUXURY"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": 74,
+    "name": "Logout - Clear Cookies",
+    "description": "Clear authentication session cookies",
+    "method": "DELETE",
+    "endpoint": "/auth/logout",
+    "expectedStatus": 200,
+    "actualStatus": 200,
+    "passed": true,
+    "durationMs": 3,
+    "requestBody": null,
+    "responseBody": {
+      "message": "Logout successful"
+    }
+  }
+]
