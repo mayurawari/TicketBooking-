@@ -54,6 +54,9 @@ export interface Booking {
   id: number;
   status: BookingStatus;
   totalAmount: number;
+  bookingReference?: string | null;
+  isScanned?: boolean;
+  scannedAt?: string | null;
   userId: number;
   eventId: number;
   seatId: number;
@@ -80,3 +83,22 @@ export interface AuthResponse {
   token?: string;
 }
 
+export interface PublicTicketPass {
+  message: string;
+  bookingReference: string;
+  event: Event;
+  user?: { name?: string | null; email?: string };
+  status: BookingStatus;
+  totalAmount: number;
+  seats: Array<{
+    id: number;
+    seatId: number;
+    seatNumber: string;
+    row: string;
+    type: SeatType;
+    price: number;
+    isScanned?: boolean;
+    scannedAt?: string | null;
+  }>;
+  createdAt: string;
+}

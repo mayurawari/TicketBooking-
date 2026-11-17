@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Event, Seat, BookedSeatItem, Venue } from "@/lib/types";
+import { Event, Seat, BookedSeatItem, Venue, Booking } from "@/lib/types";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { SEAT_PRICING, SEAT_COLORS } from "@/lib/constants";
@@ -137,7 +137,7 @@ export default function BookSeatsPage({ params }: { params: Promise<{ id: string
     }, 0);
   }, [selectedSeats]);
 
-  // Execute Booking
+  // Execute Booking (Single atomic request for all selected seats)
   const handleConfirmBooking = async () => {
     if (!isAuthenticated) {
       router.push(`/login?returnUrl=/events/${eventId}/book`);
@@ -150,21 +150,25 @@ export default function BookSeatsPage({ params }: { params: Promise<{ id: string
     setBookingError(null);
 
     try {
-      // Create bookings sequentially for each selected seat
-      for (const seat of selectedSeats) {
-        const price = SEAT_PRICING[seat.type] || 200;
-        await api.post("/api/booking/createbooking", {
-          eventId: Number(eventId),
-          seatId: seat.id,
-          totalAmount: price,
-          status: "CONFIRMED",
-        });
-      }
+      const res = await api.post<{
+        message: string;
+        bookingReference: string;
+        booking?: Booking;
+        bookings?: Booking[];
+      }>("/api/booking/createbooking", {
+        eventId: Number(eventId),
+        seatIds: selectedSeats.map((s) => s.id),
+        status: "CONFIRMED",
+      });
 
       setBookingSuccess(true);
       setTimeout(() => {
-        router.push("/my-bookings");
-      }, 1500);
+        if (res.bookingReference) {
+          router.push(`/tickets/view/${res.bookingReference}`);
+        } else {
+          router.push("/my-bookings");
+        }
+      }, 1200);
     } catch (err: any) {
       if (err?.status === 409) {
         setBookingError("One or more selected seats were just reserved by another guest. Please pick other seats.");
@@ -284,7 +288,7 @@ export default function BookSeatsPage({ params }: { params: Promise<{ id: string
           <CheckCircle2 className="h-6 w-6 flex-shrink-0 text-emerald-400" />
           <div>
             <p className="font-bold">Seats reserved successfully!</p>
-            <p className="text-xs text-emerald-400/80">Redirecting to your ticket pass...</p>
+            <p className="text-xs text-emerald-400/80">Generating your BookMyShow digital ticket pass...</p>
           </div>
         </div>
       )}
@@ -437,4 +441,3 @@ export default function BookSeatsPage({ params }: { params: Promise<{ id: string
     </div>
   );
 }
-
