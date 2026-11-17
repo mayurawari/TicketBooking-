@@ -28,11 +28,16 @@ function EventsContent() {
       const data = await api.get<{ message: string; allevents: Event[] }>("/api/event/getevents");
       setEvents(data.allevents || []);
     } catch (err: any) {
-      setError(
-        err?.status === 401
-          ? "Authentication required. Please sign in to explore movies."
-          : (err?.message || "Failed to load events")
-      );
+      if (err?.status === 401) {
+        setError("Authentication required. Please sign in to explore movies.");
+      } else {
+        const rawMsg = String(err?.message || "");
+        if (rawMsg.includes("<") || rawMsg.toLowerCase().includes("doctype")) {
+          setError("Backend connection error. Please ensure the backend server is running on port 9090.");
+        } else {
+          setError(rawMsg || "Failed to load events. Ensure backend is running.");
+        }
+      }
     } finally {
       setIsLoading(false);
     }

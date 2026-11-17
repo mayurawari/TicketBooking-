@@ -1,6 +1,6 @@
 import { AuthResponse, User } from "./types";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:9090";
 
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
@@ -41,7 +41,14 @@ export async function apiFetch<T = any>(
     credentials: "include", // send cookies
   };
 
-  let response = await fetch(url, config);
+  let response: Response;
+  try {
+    response = await fetch(url, config);
+  } catch (netErr: any) {
+    const error = new Error(`Unable to reach backend server at ${BASE_URL}. Ensure the backend is running.`);
+    (error as any).status = 0;
+    throw error;
+  }
 
   // If unauthorized and we have a token or cookies, try refreshing token once
   if (response.status === 401 && !endpoint.includes("/auth/login") && !endpoint.includes("/auth/refresh")) {
@@ -76,20 +83,38 @@ export async function apiFetch<T = any>(
     const newToken = await refreshPromise;
     if (newToken) {
       headers["Authorization"] = `Bearer ${newToken}`;
-      response = await fetch(url, { ...config, headers });
+      try {
+        response = await fetch(url, { ...config, headers });
+      } catch {
+        // Fall back to original response if retry fails
+      }
     }
   }
 
   const text = await response.text();
-  let data: any;
+  let data: any = {};
   try {
     data = text ? JSON.parse(text) : {};
   } catch {
-    data = { message: text };
+    const isHtml =
+      typeof text === "string" &&
+      (text.trim().startsWith("<!DOCTYPE") ||
+        text.trim().startsWith("<html") ||
+        text.trim().startsWith("<body") ||
+        text.trim().startsWith("<"));
+
+    data = {
+      message: isHtml
+        ? `Backend service returned ${response.status} (${response.statusText || "HTML Error"}). Ensure the backend is running on port 9090.`
+        : text || "An unexpected error occurred",
+    };
   }
 
   if (!response.ok) {
-    const errorMsg = data?.message || data?.error || `Request failed with status ${response.status}`;
+    let errorMsg = data?.message || data?.error || `Request failed with status ${response.status}`;
+    if (typeof errorMsg === "string" && (errorMsg.includes("<!DOCTYPE") || errorMsg.includes("<html"))) {
+      errorMsg = `Server error (${response.status} ${response.statusText}). Check backend connection.`;
+    }
     const error = new Error(errorMsg);
     (error as any).status = response.status;
     (error as any).data = data;

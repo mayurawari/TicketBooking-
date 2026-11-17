@@ -233,3 +233,4 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
     </div>
   );
 }
+

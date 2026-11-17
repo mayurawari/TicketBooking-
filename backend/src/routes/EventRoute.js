@@ -63,6 +63,7 @@ eventrouter.get("/getevents", async (req, res) => {
 
         const allevents = await prisma.event.findMany({
             where,
+            include: { venue: true },
             take: 10
         });
 
@@ -83,7 +84,10 @@ eventrouter.get("/oneevent/:id", async (req, res) => {
             return res.status(400).json({ message: "Invalid event ID" });
         }
 
-        const getevent = await prisma.event.findUnique({ where: { id: eventId } })
+        const getevent = await prisma.event.findUnique({
+            where: { id: eventId },
+            include: { venue: true }
+        });
         if (!getevent) {
             return res.status(404).json({ message: "No event found" });
         }
@@ -164,6 +168,5 @@ eventrouter.delete("/deleteevent/:id", adminMiddleware, async (req, res) => {
         res.status(500).json({ message: "Error deleting event" });
     }
 })
-
 
 export default eventrouter;

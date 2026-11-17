@@ -23,11 +23,16 @@ export default function Home() {
       const data = await api.get<{ message: string; allevents: Event[] }>("/api/event/getevents");
       setEvents(data.allevents || []);
     } catch (err: any) {
-      setError(
-        err?.status === 401
-          ? "Please sign in to browse and book the latest movies."
-          : (err?.message || "Failed to load events. Ensure backend is running.")
-      );
+      if (err?.status === 401) {
+        setError("Please sign in to browse and book the latest movies.");
+      } else {
+        const rawMsg = String(err?.message || "");
+        if (rawMsg.includes("<") || rawMsg.toLowerCase().includes("doctype")) {
+          setError("Backend connection error. Please ensure the backend server is running on port 9090.");
+        } else {
+          setError(rawMsg || "Failed to load events. Ensure backend is running.");
+        }
+      }
     } finally {
       setIsLoading(false);
     }
@@ -184,7 +189,7 @@ export default function Home() {
               <Ticket className="h-6 w-6" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-lg font-semibold text-white">Access Notice</h3>
+              <h3 className="text-lg font-semibold text-white">Notice</h3>
               <p className="text-sm text-zinc-400 max-w-md">{error}</p>
             </div>
             {!isAuthenticated && (

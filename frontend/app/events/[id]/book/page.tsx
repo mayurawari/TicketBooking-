@@ -437,3 +437,4 @@ export default function BookSeatsPage({ params }: { params: Promise<{ id: string
     </div>
   );
 }
+

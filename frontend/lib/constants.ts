@@ -40,3 +40,4 @@ export const SEAT_COLORS: Record<SeatType, { bg: string; border: string; text: s
     label: "Front (₹120)",
   },
 };
+

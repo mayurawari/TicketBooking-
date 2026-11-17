@@ -20,11 +20,16 @@ export default function VenuesPage() {
       const data = await api.get<{ message: string; venues: Venue[] }>("/api/venue/getvenues");
       setVenues(data.venues || []);
     } catch (err: any) {
-      setError(
-        err?.status === 401
-          ? "Please sign in to view cinemas and venues."
-          : (err?.message || "Failed to load venues")
-      );
+      if (err?.status === 401) {
+        setError("Please sign in to view cinemas and venues.");
+      } else {
+        const rawMsg = String(err?.message || "");
+        if (rawMsg.includes("<") || rawMsg.toLowerCase().includes("doctype")) {
+          setError("Backend connection error. Please ensure the backend server is running on port 9090.");
+        } else {
+          setError(rawMsg || "Failed to load venues");
+        }
+      }
     } finally {
       setIsLoading(false);
     }

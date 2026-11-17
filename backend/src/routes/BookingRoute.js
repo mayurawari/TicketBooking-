@@ -119,6 +119,11 @@ bookingrouter.post("/createbooking", async (req, res) => {
         });
 
     } catch (error) {
+        if (error.code === "P2002") {
+            return res.status(409).json({
+                message: "This seat has already been booked for this event"
+            });
+        }
         console.log("Error creating booking", error);
         return res.status(500).json({ message: "Error creating booking" });
     }
