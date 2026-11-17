@@ -1,0 +1,158 @@
+import { AuthResponse, User } from "./types";
+
+function getBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
+  }
+  // In the browser, fall back to relative URLs so Next.js rewrites can proxy requests
+  if (typeof window !== "undefined") {
+    return "";
+  }
+  return "http://localhost:9090";
+}
+
+const BASE_URL = getBaseUrl();
+
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
+
+export function getStoredToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("accesstoken");
+}
+
+export function setStoredToken(token: string | null) {
+  if (typeof window === "undefined") return;
+  if (token) {
+    localStorage.setItem("accesstoken", token);
+  } else {
+    localStorage.removeItem("accesstoken");
+  }
+}
+
+export async function apiFetch<T = any>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const url = `${BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
+  const token = getStoredToken();
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options.headers as Record<string, string>),
+  };
+
+  if (token && !headers["Authorization"]) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const config: RequestInit = {
+    ...options,
+    headers,
+    credentials: "include", // send cookies
+  };
+
+  let response: Response;
+  try {
+    response = await fetch(url, config);
+  } catch (netErr: any) {
+    const error = new Error(`Unable to reach backend server at ${BASE_URL}. Ensure the backend is running.`);
+    (error as any).status = 0;
+    throw error;
+  }
+
+  // If unauthorized and we have a token or cookies, try refreshing token once
+  if (response.status === 401 && !endpoint.includes("/auth/login") && !endpoint.includes("/auth/refresh")) {
+    if (!isRefreshing) {
+      isRefreshing = true;
+      refreshPromise = (async () => {
+        try {
+          const res = await fetch(`${BASE_URL}/auth/refresh`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.token) {
+              setStoredToken(data.token);
+              return data.token;
+            }
+          }
+          setStoredToken(null);
+          return null;
+        } catch {
+          setStoredToken(null);
+          return null;
+        } finally {
+          isRefreshing = false;
+          refreshPromise = null;
+        }
+      })();
+    }
+
+    const newToken = await refreshPromise;
+    if (newToken) {
+      headers["Authorization"] = `Bearer ${newToken}`;
+      try {
+        response = await fetch(url, { ...config, headers });
+      } catch {
+        // Fall back to original response if retry fails
+      }
+    }
+  }
+
+  const text = await response.text();
+  let data: any = {};
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    const isHtml =
+      typeof text === "string" &&
+      (text.trim().startsWith("<!DOCTYPE") ||
+        text.trim().startsWith("<html") ||
+        text.trim().startsWith("<body") ||
+        text.trim().startsWith("<"));
+
+    data = {
+      message: isHtml
+        ? `Backend service returned ${response.status} (${response.statusText || "HTML Error"}). Ensure the backend is running on port 9090.`
+        : text || "An unexpected error occurred",
+    };
+  }
+
+  if (!response.ok) {
+    let errorMsg = data?.message || data?.error || `Request failed with status ${response.status}`;
+    if (typeof errorMsg === "string" && (errorMsg.includes("<!DOCTYPE") || errorMsg.includes("<html"))) {
+      errorMsg = `Server error (${response.status} ${response.statusText}). Check backend connection.`;
+    }
+    const error = new Error(errorMsg);
+    (error as any).status = response.status;
+    (error as any).data = data;
+    throw error;
+  }
+
+  return data as T;
+}
+
+export const api = {
+  get: <T = any>(endpoint: string, options?: RequestInit) =>
+    apiFetch<T>(endpoint, { ...options, method: "GET" }),
+
+  post: <T = any>(endpoint: string, body?: any, options?: RequestInit) =>
+    apiFetch<T>(endpoint, {
+      ...options,
+      method: "POST",
+      body: body ? JSON.stringify(body) : undefined,
+    }),
+
+  patch: <T = any>(endpoint: string, body?: any, options?: RequestInit) =>
+    apiFetch<T>(endpoint, {
+      ...options,
+      method: "PATCH",
+      body: body ? JSON.stringify(body) : undefined,
+    }),
+
+  delete: <T = any>(endpoint: string, options?: RequestInit) =>
+    apiFetch<T>(endpoint, { ...options, method: "DELETE" }),
+};

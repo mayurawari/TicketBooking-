@@ -41,11 +41,11 @@ eventrouter.post("/createevent", adminMiddleware, async (req, res) => {
 //get events
 eventrouter.get("/getevents", async (req, res) => {
     try {
-        const { title, city } = req.query;
+        const { title, city, limit } = req.query;
 
         const where = {};
 
-        if (city) {
+        if (city && city !== "All") {
             where.venue = {
                 city: {
                     equals: city,
@@ -61,9 +61,13 @@ eventrouter.get("/getevents", async (req, res) => {
             }
         }
 
+        const maxLimit = limit ? Number(limit) : 100;
+
         const allevents = await prisma.event.findMany({
             where,
-            take: 10
+            include: { venue: true },
+            take: maxLimit,
+            orderBy: { id: "asc" }
         });
 
         res.status(200).json({ message: "The events", allevents });
@@ -83,7 +87,10 @@ eventrouter.get("/oneevent/:id", async (req, res) => {
             return res.status(400).json({ message: "Invalid event ID" });
         }
 
-        const getevent = await prisma.event.findUnique({ where: { id: eventId } })
+        const getevent = await prisma.event.findUnique({
+            where: { id: eventId },
+            include: { venue: true }
+        });
         if (!getevent) {
             return res.status(404).json({ message: "No event found" });
         }
@@ -164,6 +171,5 @@ eventrouter.delete("/deleteevent/:id", adminMiddleware, async (req, res) => {
         res.status(500).json({ message: "Error deleting event" });
     }
 })
-
 
 export default eventrouter;

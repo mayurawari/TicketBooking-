@@ -21,18 +21,20 @@ bookingrouter.get("/", (req, res) => {
 // 1. Create a booking (User)
 bookingrouter.post("/createbooking", async (req, res) => {
     try {
-        const { eventId, seatId, totalAmount, status } = req.body;
+        const { eventId, seatId, seatIds, totalAmount, status } = req.body;
         const userId = req.user.id;
 
         const parsedEventId = Number(eventId);
-        const parsedSeatId = Number(seatId);
-
         if (!Number.isInteger(parsedEventId) || parsedEventId <= 0) {
             return res.status(400).json({ message: "Valid eventId is required" });
         }
 
-        if (!Number.isInteger(parsedSeatId) || parsedSeatId <= 0) {
-            return res.status(400).json({ message: "Valid seatId is required" });
+        // Normalize targetSeatIds to an array of valid positive integers
+        const rawIds = Array.isArray(seatIds) ? seatIds : (seatId !== undefined ? [seatId] : []);
+        const targetSeatIds = rawIds.map(Number).filter(id => Number.isInteger(id) && id > 0);
+
+        if (targetSeatIds.length === 0) {
+            return res.status(400).json({ message: "At least one valid seatId is required" });
         }
 
         // Verify Event existence
@@ -45,80 +47,98 @@ bookingrouter.post("/createbooking", async (req, res) => {
             return res.status(404).json({ message: "Event not found" });
         }
 
-        // Verify Seat existence and venue match
-        const seat = await prisma.seat.findUnique({
-            where: { id: parsedSeatId }
+        // Verify all Seats exist and belong to the event's venue
+        const seats = await prisma.seat.findMany({
+            where: { id: { in: targetSeatIds } }
         });
 
-        if (!seat) {
-            return res.status(404).json({ message: "Seat not found" });
+        if (seats.length !== targetSeatIds.length) {
+            return res.status(404).json({ message: "One or more seats not found" });
         }
 
-        if (seat.venueId !== event.venueId) {
+        const mismatchedVenueSeat = seats.find(s => s.venueId !== event.venueId);
+        if (mismatchedVenueSeat) {
             return res.status(400).json({
-                message: `Seat belongs to venue #${seat.venueId}, but event is held at venue #${event.venueId}`
+                message: `Seat belongs to venue #${mismatchedVenueSeat.venueId}, but event is held at venue #${event.venueId}`
             });
         }
 
-        // Check if seat is already booked for this event (and not cancelled)
-        const existingBooking = await prisma.booking.findFirst({
-            where: {
-                eventId: parsedEventId,
-                seatId: parsedSeatId,
-                status: {
-                    in: ["CONFIRMED", "PENDING"]
-                }
-            }
-        });
-
-        if (existingBooking) {
-            return res.status(409).json({
-                message: "This seat has already been booked for this event"
-            });
-        }
-
-        // Determine price
-        let amount = Number(totalAmount);
-        if (isNaN(amount) || amount <= 0) {
-            amount = SEAT_TYPE_PRICING[seat.type] || 200;
-        }
+        // Generate one shared booking reference for this order (BookMyShow pattern)
+        const bookingReference = `BMS-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
 
         // Validate status if provided
         const validStatuses = ["PENDING", "CONFIRMED", "CANCELLED"];
         const bookingStatus = status && validStatuses.includes(status) ? status : "CONFIRMED";
 
-        const newBooking = await prisma.booking.create({
-            data: {
-                userId,
-                eventId: parsedEventId,
-                seatId: parsedSeatId,
-                totalAmount: amount,
-                status: bookingStatus
-            },
-            include: {
-                event: {
-                    select: {
-                        id: true,
-                        title: true,
-                        releaseDate: true,
-                        poster: true,
-                        venue: {
-                            select: { id: true, name: true, city: true, address: true }
+        // Atomic Interactive Transaction with Concurrency & Race condition checks
+        const createdBookings = await prisma.$transaction(async (tx) => {
+            // Check if ANY of the selected seats are already booked
+            const alreadyBooked = await tx.booking.findMany({
+                where: {
+                    eventId: parsedEventId,
+                    seatId: { in: targetSeatIds },
+                    status: { in: ["CONFIRMED", "PENDING"] }
+                }
+            });
+
+            if (alreadyBooked.length > 0) {
+                const err = new Error("This seat has already been booked for this event");
+                err.statusCode = 409;
+                throw err;
+            }
+
+            // Create bookings for all seats sharing the bookingReference
+            const results = [];
+            for (const seat of seats) {
+                let amount = Number(totalAmount);
+                if (isNaN(amount) || amount <= 0 || targetSeatIds.length > 1) {
+                    amount = SEAT_TYPE_PRICING[seat.type] || 200;
+                }
+
+                const newBooking = await tx.booking.create({
+                    data: {
+                        userId,
+                        eventId: parsedEventId,
+                        seatId: seat.id,
+                        bookingReference,
+                        totalAmount: amount,
+                        status: bookingStatus
+                    },
+                    include: {
+                        event: {
+                            select: {
+                                id: true,
+                                title: true,
+                                releaseDate: true,
+                                poster: true,
+                                venue: {
+                                    select: { id: true, name: true, city: true, address: true }
+                                }
+                            }
+                        },
+                        seat: {
+                            select: { id: true, seatNumber: true, row: true, type: true }
                         }
                     }
-                },
-                seat: {
-                    select: { id: true, seatNumber: true, row: true, type: true }
-                }
+                });
+                results.push(newBooking);
             }
+            return results;
         });
 
         return res.status(201).json({
             message: "Booking created successfully",
-            booking: newBooking
+            bookingReference,
+            booking: createdBookings[0],
+            bookings: createdBookings
         });
 
     } catch (error) {
+        if (error.statusCode === 409 || error.code === "P2002") {
+            return res.status(409).json({
+                message: "This seat has already been booked for this event"
+            });
+        }
         console.log("Error creating booking", error);
         return res.status(500).json({ message: "Error creating booking" });
     }
@@ -301,6 +321,52 @@ bookingrouter.get("/allbookings", adminMiddleware, async (req, res) => {
     } catch (error) {
         console.log("Error fetching all bookings", error);
         return res.status(500).json({ message: "Error fetching all bookings" });
+    }
+});
+
+// 7. Public route to view a shared ticket
+bookingrouter.get("/public/:bookingReference", async (req, res) => {
+    try {
+        const { bookingReference } = req.params;
+        if (!bookingReference) {
+            return res.status(400).json({ message: "Booking reference is required" });
+        }
+
+        const bookings = await prisma.booking.findMany({
+            where: { bookingReference },
+            include: {
+                event: { include: { venue: true } },
+                seat: true,
+                user: { select: { name: true, email: true } }
+            }
+        });
+
+        if (bookings.length === 0) {
+            return res.status(404).json({ message: "Booking not found" });
+        }
+
+        return res.status(200).json({
+            message: "Booking details fetched",
+            bookingReference,
+            event: bookings[0].event,
+            user: bookings[0].user,
+            status: bookings[0].status,
+            totalAmount: bookings.reduce((sum, b) => sum + b.totalAmount, 0),
+            seats: bookings.map(b => ({
+                id: b.id,
+                seatId: b.seatId,
+                seatNumber: b.seat.seatNumber,
+                row: b.seat.row,
+                type: b.seat.type,
+                price: b.totalAmount,
+                isScanned: b.isScanned,
+                scannedAt: b.scannedAt
+            })),
+            createdAt: bookings[0].createdAt
+        });
+    } catch (error) {
+        console.log("Error fetching public booking", error);
+        return res.status(500).json({ message: "Error fetching public booking" });
     }
 });
 

@@ -1,0 +1,32 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ticketpass-backend
+    ports:
+      - "9090:9090"
+    environment:
+      - PORT=9090
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - KEY=${KEY}
+      - CLIENT_URL=http://localhost:3000
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:9090
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:9090
+    container_name: ticketpass-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:9090
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    restart: unless-stopped
