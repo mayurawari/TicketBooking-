@@ -44,7 +44,14 @@ app.use("/auth", userrouter);
 app.use("/api/venue", authmiddleware, venuerouter);
 app.use("/api/event", authmiddleware, eventrouter);
 app.use("/api/seat", authmiddleware, seatrouter);
-app.use("/api/booking", authmiddleware, bookingrouter);
+
+// Booking routes - allows public ticket view (/api/booking/public/:ref) without auth
+app.use("/api/booking", (req, res, next) => {
+    if (req.path.startsWith("/public/")) {
+        return bookingrouter(req, res, next);
+    }
+    return authmiddleware(req, res, () => bookingrouter(req, res, next));
+});
 
 app.get("/", async (req, res) => {
     res.send("Welcome to the Ticket Booking API");
