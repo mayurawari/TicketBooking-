@@ -1,0 +1,39 @@
+# Multi-stage production Dockerfile for TicketPass Backend
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+# Enable pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Install dependencies
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --frozen-lockfile
+
+# Copy source and prisma schema
+COPY prisma ./prisma
+COPY src ./src
+COPY scripts ./scripts
+COPY index.js ./
+
+# Generate Prisma client
+RUN pnpm run build
+
+# Runner stage
+FROM node:22-alpine AS runner
+
+WORKDIR /app
+ENV NODE_ENV=production
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/index.js ./index.js
+
+EXPOSE 9090
+
+CMD ["node", "index.js"]

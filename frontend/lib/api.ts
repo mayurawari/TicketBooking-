@@ -1,6 +1,17 @@
 import { AuthResponse, User } from "./types";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:9090";
+function getBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
+  }
+  // In the browser, fall back to relative URLs so Next.js rewrites can proxy requests
+  if (typeof window !== "undefined") {
+    return "";
+  }
+  return "http://localhost:9090";
+}
+
+const BASE_URL = getBaseUrl();
 
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
