@@ -18,7 +18,7 @@ bookingrouter.get("/", (req, res) => {
     res.send("This is booking route");
 });
 
-// 1. Create a booking (User) - Supports single seatId or array seatIds under one shared bookingReference
+// 1. Create a booking (User)
 bookingrouter.post("/createbooking", async (req, res) => {
     try {
         const { eventId, seatId, seatIds, totalAmount, status } = req.body;
@@ -324,7 +324,7 @@ bookingrouter.get("/allbookings", adminMiddleware, async (req, res) => {
     }
 });
 
-// 7. Public route to view a shared ticket by bookingReference (No auth required so friends can open shared ticket links)
+// 7. Public route to view a shared ticket
 bookingrouter.get("/public/:bookingReference", async (req, res) => {
     try {
         const { bookingReference } = req.params;

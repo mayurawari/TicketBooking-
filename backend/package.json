@@ -9,7 +9,8 @@
     "build": "prisma generate",
     "postinstall": "prisma generate",
     "test": "node scripts/test_routes.mjs",
-    "test:concurrency": "node scripts/test_concurrency.mjs"
+    "test:concurrency": "node scripts/test_concurrency.mjs",
+    "test:new": "node scripts/test_new_routes.mjs"
   },
   "keywords": [],
   "author": "",
