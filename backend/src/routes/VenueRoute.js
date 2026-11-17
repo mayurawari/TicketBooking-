@@ -63,7 +63,7 @@ venuerouter.get("/getvenues", async (req, res) => {
     const { event, city } = req.query;
     try {
         const where = {};
-        if (city) {
+        if (city && city !== "All") {
             where.city = {
                 equals: city,
                 mode: "insensitive"
@@ -81,7 +81,20 @@ venuerouter.get("/getvenues", async (req, res) => {
             };
         }
 
-        const venues = await prisma.venue.findMany({ where });
+        const venues = await prisma.venue.findMany({
+            where,
+            include: {
+                events: {
+                    select: {
+                        id: true,
+                        title: true,
+                        poster: true,
+                        rating: true
+                    }
+                }
+            },
+            orderBy: { city: "asc" }
+        });
 
         return res.status(200).json({
             message: "Venues fetched successfully",

@@ -10,7 +10,9 @@
     "postinstall": "prisma generate",
     "test": "node scripts/test_routes.mjs",
     "test:concurrency": "node scripts/test_concurrency.mjs",
-    "test:new": "node scripts/test_new_routes.mjs"
+    "test:new": "node scripts/test_new_routes.mjs",
+    "seed": "node scripts/seed_real_data.mjs",
+    "sync:tmdb": "node scripts/sync_tmdb.mjs"
   },
   "keywords": [],
   "author": "",

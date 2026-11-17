@@ -41,9 +41,21 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use("/auth", userrouter);
-app.use("/api/venue", authmiddleware, venuerouter);
-app.use("/api/event", authmiddleware, eventrouter);
-app.use("/api/seat", authmiddleware, seatrouter);
+// Public read-only catalog routes (matches BookMyShow browsing behavior)
+app.use("/api/venue", (req, res, next) => {
+    if (req.method === "GET") return venuerouter(req, res, next);
+    return authmiddleware(req, res, () => venuerouter(req, res, next));
+});
+
+app.use("/api/event", (req, res, next) => {
+    if (req.method === "GET") return eventrouter(req, res, next);
+    return authmiddleware(req, res, () => eventrouter(req, res, next));
+});
+
+app.use("/api/seat", (req, res, next) => {
+    if (req.method === "GET") return seatrouter(req, res, next);
+    return authmiddleware(req, res, () => seatrouter(req, res, next));
+});
 
 // Booking routes - allows public ticket view (/api/booking/public/:ref) without auth
 app.use("/api/booking", (req, res, next) => {

@@ -43,10 +43,29 @@ async function runTestSuite() {
   });
   const loginData = await loginRes.json();
   if (!loginData.token) {
-    throw new Error('Could not log in test user');
+    throw new Error('Could not log in test user: ' + (loginData.message || 'unknown error'));
   }
   userToken = loginData.token;
-  console.log(`Authenticated as ${loginData.user.email} (ID: ${loginData.user.id})\n`);
+  console.log(`Authenticated as ${loginData.user.email} (ID: ${loginData.user.id})`);
+
+  // Dynamically discover valid event and venues
+  const eventsRes = await fetch(`${BASE_URL}/api/event/getevents`).then(r => r.json());
+  const allEvents = eventsRes.allevents || [];
+  if (allEvents.length === 0) {
+    throw new Error('No events found in database to run tests against');
+  }
+  const testEvent = allEvents[0];
+  testEventId = testEvent.id;
+  testVenueId = testEvent.venueId;
+
+  const venuesRes = await fetch(`${BASE_URL}/api/venue/getvenues`).then(r => r.json());
+  const allVenues = venuesRes.venues || [];
+  const otherVenue = allVenues.find(v => v.id !== testVenueId);
+  wrongVenueId = otherVenue ? otherVenue.id : (testVenueId + 1);
+
+  console.log(`Selected Test Event ID: ${testEventId} (${testEvent.title})`);
+  console.log(`Selected Test Venue ID: ${testVenueId} (${testEvent.venue?.name})`);
+  console.log(`Selected Other Venue ID: ${wrongVenueId}\n`);
 
   // Fetch venue seats and booked seats
   const [venueSeatsRes, bookedRes, wrongVenueSeatsRes] = await Promise.all([

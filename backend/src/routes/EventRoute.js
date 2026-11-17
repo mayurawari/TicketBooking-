@@ -41,11 +41,11 @@ eventrouter.post("/createevent", adminMiddleware, async (req, res) => {
 //get events
 eventrouter.get("/getevents", async (req, res) => {
     try {
-        const { title, city } = req.query;
+        const { title, city, limit } = req.query;
 
         const where = {};
 
-        if (city) {
+        if (city && city !== "All") {
             where.venue = {
                 city: {
                     equals: city,
@@ -61,10 +61,13 @@ eventrouter.get("/getevents", async (req, res) => {
             }
         }
 
+        const maxLimit = limit ? Number(limit) : 100;
+
         const allevents = await prisma.event.findMany({
             where,
             include: { venue: true },
-            take: 10
+            take: maxLimit,
+            orderBy: { id: "asc" }
         });
 
         res.status(200).json({ message: "The events", allevents });
