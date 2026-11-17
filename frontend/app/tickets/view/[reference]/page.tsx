@@ -162,13 +162,13 @@ export default function PublicTicketViewPage({
 
           <div className="flex items-center gap-2">
             <span
-              className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${
+              className={`rounded-md px-2.5 py-1 text-xs font-bold uppercase tracking-wider ${
                 isCancelled
                   ? "bg-red-500/10 text-red-400 border border-red-500/20"
                   : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
               }`}
             >
-              ● {status}
+              {status}
             </span>
           </div>
         </div>

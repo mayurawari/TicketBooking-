@@ -319,13 +319,13 @@ export default function MyBookingsPage() {
                   {/* Status Overlay Badge */}
                   <div className="absolute top-3 left-3 md:hidden">
                     <span
-                      className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                      className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                         isConfirmed
                           ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 backdrop-blur-md"
                           : "bg-red-500/20 text-red-400 border border-red-500/30 backdrop-blur-md"
                       }`}
                     >
-                      ● {group.status}
+                      {group.status}
                     </span>
                   </div>
                 </div>
@@ -336,13 +336,13 @@ export default function MyBookingsPage() {
                     <div className="space-y-1.5">
                       <div className="hidden md:flex items-center gap-2 mb-1">
                         <span
-                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                          className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                             isConfirmed
                               ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                               : "bg-red-500/10 text-red-400 border border-red-500/20"
                           }`}
                         >
-                          ● {group.status}
+                          {group.status}
                         </span>
                         <span className="text-xs text-amber-400 font-mono font-bold">
                           Pass: {group.reference}

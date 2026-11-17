@@ -7,21 +7,7 @@ import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useCity } from "@/context/CityContext";
 import EventCard from "@/components/events/EventCard";
-import {
-  Film,
-  Search,
-  MapPin,
-  Sparkles,
-  Ticket,
-  Shield,
-  RefreshCw,
-  Building2,
-  Star,
-  Flame,
-  ChevronRight,
-  Share2,
-  Tv
-} from "lucide-react";
+import { Search } from "lucide-react";
 
 export default function Home() {
   const { isAuthenticated, user } = useAuth();
@@ -69,7 +55,7 @@ export default function Home() {
     fetchData();
   }, [selectedCity]);
 
-  // Featured Spotlight Movie (Top Rated)
+  // Top Rated Featured Movie
   const spotlightMovie = useMemo(() => {
     if (events.length === 0) return null;
     return [...events].sort((a, b) => (b.rating || 0) - (a.rating || 0))[0];
@@ -94,80 +80,69 @@ export default function Home() {
   }, [events, searchQuery, activeFilter]);
 
   return (
-    <div className="space-y-12 pb-20">
-      {/* 1. BookMyShow Featured Hero Spotlight Banner */}
+    <div className="space-y-12 pb-16">
+      {/* 1. Spotlight Feature Banner */}
       {spotlightMovie && (
-        <section className="relative overflow-hidden bg-zinc-950 border-b border-zinc-800/80">
-          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
-            <div className="relative rounded-3xl overflow-hidden border border-zinc-800 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 shadow-2xl">
-              {/* Backdrop glow */}
-              <div className="absolute inset-0 bg-gradient-to-r from-rose-950/40 via-amber-950/20 to-transparent pointer-events-none" />
-
-              <div className="relative grid grid-cols-1 md:grid-cols-12 gap-8 p-6 sm:p-10 lg:p-12 items-center">
-                {/* Text Specs */}
-                <div className="md:col-span-8 space-y-5">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-rose-500/10 border border-rose-500/20 px-3.5 py-1 text-xs font-semibold text-rose-400">
-                    <Flame className="h-3.5 w-3.5 text-rose-400 fill-rose-400" />
-                    <span>Trending Blockbuster in {selectedCity}</span>
+        <section className="border-b border-zinc-800/80 bg-zinc-950">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 lg:p-10 shadow-xl">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                {/* Movie Specs */}
+                <div className="md:col-span-8 space-y-4">
+                  <div className="inline-block rounded-md bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-rose-400">
+                    Spotlight in {selectedCity}
                   </div>
 
-                  <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                  <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
                     {spotlightMovie.title}
                   </h1>
 
-                  <div className="flex flex-wrap items-center gap-3 text-xs">
+                  <div className="flex flex-wrap items-center gap-2.5 text-xs">
                     {spotlightMovie.rating && (
-                      <div className="flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1 font-bold text-amber-400">
-                        <Star className="h-3.5 w-3.5 fill-amber-400" />
-                        <span>{spotlightMovie.rating.toFixed(1)} / 10 Rating</span>
-                      </div>
+                      <span className="rounded-md bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 font-bold text-amber-400">
+                        {spotlightMovie.rating.toFixed(1)} / 10
+                      </span>
                     )}
-                    <div className="rounded-full bg-zinc-800 px-3 py-1 text-zinc-300 font-medium">
-                      IMAX 2D • 4K Dolby Atmos
-                    </div>
+                    <span className="rounded-md bg-zinc-800 px-2.5 py-1 text-zinc-300 font-medium">
+                      IMAX 2D | 4K Dolby Atmos
+                    </span>
                     {spotlightMovie.venue && (
-                      <div className="flex items-center gap-1 text-zinc-400">
-                        <MapPin className="h-3.5 w-3.5 text-rose-500" />
-                        <span>{spotlightMovie.venue.name}</span>
-                      </div>
+                      <span className="text-zinc-400">
+                        {spotlightMovie.venue.name}, {spotlightMovie.venue.city}
+                      </span>
                     )}
                   </div>
 
-                  <p className="text-sm text-zinc-300 line-clamp-3 max-w-2xl leading-relaxed">
+                  <p className="text-xs sm:text-sm text-zinc-300 line-clamp-3 max-w-2xl leading-relaxed">
                     {spotlightMovie.description}
                   </p>
 
-                  <div className="flex flex-wrap items-center gap-4 pt-2">
+                  <div className="flex flex-wrap items-center gap-3 pt-2">
                     <Link
                       href={`/events/${spotlightMovie.id}`}
-                      className="rounded-2xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-amber-500 px-7 py-3 text-sm font-bold text-white shadow-lg shadow-rose-950/40 hover:scale-105 transition-all"
+                      className="rounded-lg bg-rose-600 hover:bg-rose-500 px-6 py-2.5 text-xs font-semibold text-white transition-colors"
                     >
-                      Book Tickets Now
+                      Book Tickets
                     </Link>
                     <button
                       onClick={openCityModal}
-                      className="flex items-center gap-1.5 rounded-2xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-xs font-semibold text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors cursor-pointer"
+                      className="rounded-lg bg-zinc-800 hover:bg-zinc-700 px-4 py-2.5 text-xs font-medium text-zinc-300 hover:text-white transition-colors cursor-pointer"
                     >
-                      <MapPin className="h-3.5 w-3.5 text-rose-500" />
-                      <span>Explore other cities</span>
+                      Change Region
                     </button>
                   </div>
                 </div>
 
                 {/* Poster Preview */}
-                <div className="hidden md:flex md:col-span-4 justify-center">
-                  <div className="relative aspect-[2/3] w-56 rounded-2xl overflow-hidden shadow-2xl border border-zinc-700/60 group-hover:scale-105 transition-transform">
-                    {spotlightMovie.poster ? (
+                <div className="hidden md:flex md:col-span-4 justify-end">
+                  <div className="relative aspect-[2/3] w-48 rounded-xl overflow-hidden shadow-xl border border-zinc-700/60 bg-zinc-950">
+                    {spotlightMovie.poster && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={spotlightMovie.poster}
                         alt={spotlightMovie.title}
                         className="h-full w-full object-cover"
                       />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-zinc-800 text-zinc-500">
-                        <Film className="h-12 w-12" />
-                      </div>
                     )}
                   </div>
                 </div>
@@ -179,15 +154,11 @@ export default function Home() {
 
       {/* 2. Main Movies Grid with City Header & Filter Bar */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
-        {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-5">
-          <div className="space-y-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-4">
+          <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                <span>Recommended Movies in</span>
-                <span className="bg-gradient-to-r from-rose-500 to-amber-400 bg-clip-text text-transparent">
-                  {selectedCity}
-                </span>
+              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                Now Showing in {selectedCity}
               </h2>
               <button
                 onClick={openCityModal}
@@ -196,56 +167,55 @@ export default function Home() {
                 (Change)
               </button>
             </div>
-            <p className="text-xs text-zinc-400">
-              Select any movie to choose showtimes, screens, and reserve seats in real-time
+            <p className="text-xs text-zinc-400 mt-0.5">
+              Select a movie to view schedules, venues, and reserve seats
             </p>
           </div>
 
-          {/* Filter Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          {/* Filter Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
             <button
               onClick={() => setActiveFilter("ALL")}
-              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
                 activeFilter === "ALL"
-                  ? "bg-rose-600 text-white shadow-md shadow-rose-950/30"
+                  ? "bg-rose-600 text-white font-semibold"
                   : "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white"
               }`}
             >
-              All Releases
+              All Movies
             </button>
             <button
               onClick={() => setActiveFilter("TOP_RATED")}
-              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
                 activeFilter === "TOP_RATED"
-                  ? "bg-amber-500 text-zinc-950 shadow-md shadow-amber-950/30"
+                  ? "bg-amber-500 text-zinc-950 font-semibold"
                   : "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white"
               }`}
             >
-              <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-              <span>Top Rated (8.0+)</span>
+              Top Rated (8.0+)
             </button>
             <button
               onClick={() => setActiveFilter("MULTIPLEX")}
-              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
                 activeFilter === "MULTIPLEX"
-                  ? "bg-rose-600 text-white shadow-md shadow-rose-950/30"
+                  ? "bg-rose-600 text-white font-semibold"
                   : "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white"
               }`}
             >
-              Multiplex & IMAX
+              Multiplex / IMAX
             </button>
           </div>
         </div>
 
-        {/* Search input in section */}
-        <div className="relative max-w-md">
-          <Search className="absolute left-3.5 top-3 h-4 w-4 text-zinc-400" />
+        {/* Filter Input */}
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-zinc-500" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={`Filter movies in ${selectedCity}...`}
-            className="w-full rounded-2xl bg-zinc-900/80 border border-zinc-800 pl-10 pr-4 py-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-rose-500/40"
+            placeholder={`Filter titles in ${selectedCity}...`}
+            className="w-full rounded-lg bg-zinc-900 border border-zinc-800 pl-10 pr-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-rose-500"
           />
         </div>
 
@@ -255,33 +225,31 @@ export default function Home() {
             {[1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
-                className="aspect-[2/3] rounded-2xl bg-zinc-900 border border-zinc-800 animate-pulse"
+                className="aspect-[2/3] rounded-xl bg-zinc-900 border border-zinc-800 animate-pulse"
               />
             ))}
           </div>
         ) : error ? (
-          <div className="rounded-3xl bg-zinc-900 border border-zinc-800 p-10 text-center space-y-3">
-            <p className="text-sm text-zinc-400">{error}</p>
+          <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-8 text-center space-y-3">
+            <p className="text-xs text-zinc-400">{error}</p>
             <button
               onClick={fetchData}
-              className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-xs font-semibold text-white"
+              className="rounded-lg bg-rose-600 px-4 py-2 text-xs font-semibold text-white"
             >
-              <RefreshCw className="h-3.5 w-3.5" />
-              <span>Retry</span>
+              Retry
             </button>
           </div>
         ) : filteredEvents.length === 0 ? (
-          <div className="rounded-3xl bg-zinc-900 border border-zinc-800 p-12 text-center space-y-3">
-            <Film className="h-10 w-10 text-zinc-600 mx-auto" />
-            <h3 className="text-base font-bold text-white">No movie screenings found</h3>
+          <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-12 text-center space-y-2">
+            <h3 className="text-sm font-semibold text-white">No Screenings Available</h3>
             <p className="text-xs text-zinc-400">
-              No shows match your filter in <strong>{selectedCity}</strong>.
+              No shows match this filter in {selectedCity}.
             </p>
             <button
               onClick={() => setSelectedCity("All Cities")}
-              className="rounded-xl bg-zinc-800 px-4 py-2 text-xs font-semibold text-zinc-200 hover:text-white"
+              className="mt-2 rounded-lg bg-zinc-800 px-3.5 py-1.5 text-xs text-zinc-300 hover:text-white"
             >
-              View All Cities
+              Show All Cities
             </button>
           </div>
         ) : (
@@ -293,96 +261,82 @@ export default function Home() {
         )}
       </section>
 
-      {/* 3. Famous Multiplexes & Theatres in Selected City */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6 pt-6">
-        <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-              <Building2 className="h-6 w-6 text-amber-500" />
-              <span>Popular Theatres & Cinemas in {selectedCity}</span>
+      {/* 3. Theatres in City */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-5 pt-4">
+        <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+          <div>
+            <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+              Cinemas & Multiplexes in {selectedCity}
             </h2>
             <p className="text-xs text-zinc-400">
-              Experience movies on world-class IMAX, 4DX, and Dolby Atmos screens
+              Major venues with certified sound and projection
             </p>
           </div>
           <Link
             href="/venues"
-            className="text-xs text-amber-400 hover:underline flex items-center gap-1 font-semibold"
+            className="text-xs text-amber-400 hover:underline font-medium"
           >
-            <span>View All Theatres</span>
-            <ChevronRight className="h-3.5 w-3.5" />
+            All Venues
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {venues.slice(0, 3).map((venue) => (
             <div
               key={venue.id}
-              className="flex flex-col justify-between rounded-2xl bg-zinc-900 border border-zinc-800 p-5 space-y-4 hover:border-zinc-700 transition-all shadow-md"
+              className="flex flex-col justify-between rounded-xl bg-zinc-900 border border-zinc-800 p-4 space-y-3"
             >
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                    {venue.type}
-                  </span>
-                  <span className="text-xs text-zinc-500">{venue.city}</span>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-[10px] text-zinc-400">
+                  <span className="font-semibold uppercase text-amber-400">{venue.type}</span>
+                  <span>{venue.city}</span>
                 </div>
-                <h3 className="font-bold text-base text-white">{venue.name}</h3>
+                <h3 className="font-semibold text-sm text-white">{venue.name}</h3>
                 <p className="text-xs text-zinc-400 line-clamp-2">{venue.address}</p>
-                <div className="flex items-center gap-4 text-xs text-zinc-400 pt-2 border-t border-zinc-800/60">
-                  <div className="flex items-center gap-1">
-                    <Tv className="h-3.5 w-3.5 text-zinc-500" />
-                    <span>{venue.totalScreens} Screens</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                    <span>Dolby 4K • Recliner</span>
-                  </div>
+                <div className="text-[11px] text-zinc-500 pt-1">
+                  {venue.totalScreens} Screens | Tiered Seating
                 </div>
               </div>
 
               <Link
                 href={`/events?city=${encodeURIComponent(venue.city)}`}
-                className="w-full flex items-center justify-center rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-2 text-xs font-semibold transition-colors"
+                className="w-full text-center rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-2 text-xs font-medium transition-colors"
               >
-                Browse Screenings Here
+                View Screenings
               </Link>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 4. BookMyShow Standards Guarantee Banner */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6">
-        <div className="rounded-3xl bg-gradient-to-r from-rose-950/30 via-zinc-900 to-amber-950/20 border border-zinc-800 p-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
-            <div className="space-y-2">
-              <div className="h-10 w-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 mx-auto md:mx-0">
-                <Shield className="h-5 w-5" />
-              </div>
-              <h3 className="text-sm font-bold text-white">Guaranteed Zero Double Booking</h3>
+      {/* 4. Booking System Specs */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-4">
+        <div className="rounded-xl bg-zinc-900/60 border border-zinc-800 p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-1 border-l-2 border-rose-500 pl-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                Zero Double Booking
+              </h3>
               <p className="text-xs text-zinc-400">
-                Enforced by database-level partial unique indexing and atomic multi-seat transactions.
+                PostgreSQL partial unique indexing and atomic multi-seat transactions ensure concurrency safety.
               </p>
             </div>
 
-            <div className="space-y-2">
-              <div className="h-10 w-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mx-auto md:mx-0">
-                <Share2 className="h-5 w-5" />
-              </div>
-              <h3 className="text-sm font-bold text-white">Instant Friend Link Sharing</h3>
+            <div className="space-y-1 border-l-2 border-amber-500 pl-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                Consolidated Passes
+              </h3>
               <p className="text-xs text-zinc-400">
-                Share public M-Ticket passes directly on WhatsApp. Friends can view and scan passes without logging in.
+                All seats in an order are unified under a single reference card with split entry support.
               </p>
             </div>
 
-            <div className="space-y-2">
-              <div className="h-10 w-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 mx-auto md:mx-0">
-                <Ticket className="h-5 w-5" />
-              </div>
-              <h3 className="text-sm font-bold text-white">Consolidated Master Cards</h3>
+            <div className="space-y-1 border-l-2 border-rose-500 pl-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                Public Shareable Link
+              </h3>
               <p className="text-xs text-zinc-400">
-                All seats in an order are grouped into a single unified pass card with individual gate split-entry.
+                Friends can open and view digital M-Ticket passes instantly without creating accounts.
               </p>
             </div>
           </div>

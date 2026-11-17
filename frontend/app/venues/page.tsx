@@ -5,18 +5,7 @@ import Link from "next/link";
 import { Venue } from "@/lib/types";
 import { api } from "@/lib/api";
 import { useCity } from "@/context/CityContext";
-import {
-  Building2,
-  MapPin,
-  Tv,
-  Users,
-  ArrowRight,
-  RefreshCw,
-  AlertCircle,
-  Search,
-  Sparkles,
-  Film
-} from "lucide-react";
+import { Search } from "lucide-react";
 
 export default function VenuesPage() {
   const { selectedCity, setSelectedCity, openCityModal } = useCity();
@@ -68,57 +57,54 @@ export default function VenuesPage() {
   }, [venues, searchQuery, selectedType]);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-            <Building2 className="h-7 w-7 text-amber-500" />
-            <span>Cinemas & Multiplexes in {selectedCity}</span>
+          <h1 className="text-2xl font-bold tracking-tight text-white">
+            Cinemas in {selectedCity}
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-            Explore premier IMAX, 4DX, and luxury single-screen heritage theatres
+          <p className="text-xs text-zinc-400 mt-0.5">
+            Multiplex and single-screen auditoriums
           </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={openCityModal}
-            className="flex items-center gap-2 rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:border-amber-500/50 transition-colors cursor-pointer"
-          >
-            <MapPin className="h-3.5 w-3.5 text-rose-500" />
-            <span>Change City ({selectedCity})</span>
-          </button>
-          <button
-            onClick={fetchVenues}
-            disabled={isLoading}
-            className="flex items-center gap-2 rounded-xl bg-zinc-900 border border-zinc-800 px-3.5 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors cursor-pointer"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
-            <span className="hidden sm:inline">Refresh</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Search & Filter Toolbar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search cinemas by name, mall, or street..."
-            className="w-full rounded-xl bg-zinc-950 border border-zinc-800 pl-10 pr-4 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
-          />
         </div>
 
         <div className="flex items-center gap-2">
           <button
+            onClick={openCityModal}
+            className="rounded-lg bg-zinc-900 border border-zinc-800 px-3.5 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors cursor-pointer"
+          >
+            Change City ({selectedCity})
+          </button>
+          <button
+            onClick={fetchVenues}
+            disabled={isLoading}
+            className="rounded-lg bg-zinc-900 border border-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-400 hover:text-white transition-colors cursor-pointer"
+          >
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      {/* Toolbar */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-zinc-900/60 border border-zinc-800 rounded-xl p-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search cinemas by name or location..."
+            className="w-full rounded-lg bg-zinc-950 border border-zinc-800 pl-9 pr-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-rose-500"
+          />
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <button
             onClick={() => setSelectedType("ALL")}
-            className={`rounded-xl px-4 py-2 text-xs font-semibold transition-all cursor-pointer ${
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
               selectedType === "ALL"
-                ? "bg-amber-500 text-zinc-950 font-bold shadow"
+                ? "bg-amber-500 text-zinc-950 font-semibold"
                 : "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white"
             }`}
           >
@@ -126,51 +112,48 @@ export default function VenuesPage() {
           </button>
           <button
             onClick={() => setSelectedType("MULTIPLEX")}
-            className={`rounded-xl px-4 py-2 text-xs font-semibold transition-all cursor-pointer ${
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
               selectedType === "MULTIPLEX"
-                ? "bg-amber-500 text-zinc-950 font-bold shadow"
+                ? "bg-amber-500 text-zinc-950 font-semibold"
                 : "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white"
             }`}
           >
-            Multiplexes
+            Multiplex
           </button>
           <button
             onClick={() => setSelectedType("THEATRE")}
-            className={`rounded-xl px-4 py-2 text-xs font-semibold transition-all cursor-pointer ${
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
               selectedType === "THEATRE"
-                ? "bg-amber-500 text-zinc-950 font-bold shadow"
+                ? "bg-amber-500 text-zinc-950 font-semibold"
                 : "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white"
             }`}
           >
-            Heritage Theatres
+            Single Screen
           </button>
         </div>
       </div>
 
-      {/* Grid of Theatres */}
+      {/* Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-64 rounded-2xl bg-zinc-900 border border-zinc-800 animate-pulse" />
+            <div key={i} className="h-52 rounded-xl bg-zinc-900 border border-zinc-800 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl bg-zinc-900 border border-zinc-800 p-12 text-center space-y-4">
-          <AlertCircle className="h-10 w-10 text-amber-500" />
-          <h3 className="text-lg font-semibold text-white">Notice</h3>
-          <p className="text-sm text-zinc-400 max-w-md">{error}</p>
+        <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-8 text-center space-y-2">
+          <p className="text-xs text-zinc-400">{error}</p>
           <button
             onClick={fetchVenues}
-            className="rounded-xl bg-amber-600 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-amber-500"
+            className="rounded-lg bg-amber-600 px-4 py-1.5 text-xs font-semibold text-white"
           >
-            Retry Connection
+            Retry
           </button>
         </div>
       ) : filteredVenues.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl bg-zinc-900 border border-zinc-800 p-16 text-center space-y-3">
-          <Building2 className="h-12 w-12 text-zinc-600" />
-          <h3 className="text-lg font-semibold text-zinc-200">No Cinemas Found</h3>
-          <p className="text-sm text-zinc-500">
+        <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-12 text-center space-y-2">
+          <h3 className="text-sm font-semibold text-zinc-200">No Cinemas Found</h3>
+          <p className="text-xs text-zinc-400">
             No venues found matching your criteria in {selectedCity}.
           </p>
           <button
@@ -178,70 +161,47 @@ export default function VenuesPage() {
               setSearchQuery("");
               setSelectedCity("All Cities");
             }}
-            className="rounded-xl bg-zinc-800 px-4 py-2 text-xs font-semibold text-zinc-200 hover:text-white"
+            className="mt-1 rounded-lg bg-zinc-800 px-3.5 py-1.5 text-xs text-zinc-300 hover:text-white"
           >
-            Show Theatres in All Cities
+            Show All Cities
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredVenues.map((venue) => (
             <div
               key={venue.id}
-              className="flex flex-col justify-between rounded-2xl bg-zinc-900 border border-zinc-800 p-6 space-y-5 hover:border-zinc-700 transition-all shadow-md group"
+              className="flex flex-col justify-between rounded-xl bg-zinc-900 border border-zinc-800 p-5 space-y-4 hover:border-zinc-700 transition-colors"
             >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs">
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">
                     {venue.type}
                   </span>
-                  <div className="flex items-center gap-1 text-xs text-zinc-400">
-                    <MapPin className="h-3 w-3 text-rose-500" />
-                    <span>{venue.city}</span>
-                  </div>
+                  <span className="text-zinc-500 text-[11px]">{venue.city}</span>
                 </div>
 
-                <h3 className="font-bold text-lg text-white group-hover:text-amber-400 transition-colors">
+                <h3 className="font-semibold text-base text-white">
                   {venue.name}
                 </h3>
 
-                <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-zinc-400 line-clamp-2">
                   {venue.address}
                 </p>
 
-                {/* Amenities Badges */}
-                <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                  <span className="text-[10px] bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-md">
-                    Dolby Atmos 4K
-                  </span>
-                  <span className="text-[10px] bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-md">
-                    Laser Projection
-                  </span>
-                  <span className="text-[10px] bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-md">
-                    Luxury Recliner
-                  </span>
-                </div>
-
                 {/* Specs */}
-                <div className="flex items-center gap-5 text-xs text-zinc-400 pt-3 border-t border-zinc-800">
-                  <div className="flex items-center gap-1.5">
-                    <Tv className="h-4 w-4 text-zinc-500" />
-                    <span>{venue.totalScreens} Screens</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Users className="h-4 w-4 text-zinc-500" />
-                    <span>Tiered Seating Layout</span>
-                  </div>
+                <div className="flex items-center gap-3 text-xs text-zinc-400 pt-2 border-t border-zinc-800">
+                  <span>{venue.totalScreens} Screens</span>
+                  <span className="text-zinc-600">|</span>
+                  <span>Dolby Atmos 4K</span>
                 </div>
               </div>
 
-              {/* Action Button */}
               <Link
                 href={`/events?city=${encodeURIComponent(venue.city)}`}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-zinc-800 hover:bg-gradient-to-r hover:from-rose-600 hover:to-amber-500 text-zinc-200 hover:text-white py-2.5 text-xs font-semibold transition-all shadow"
+                className="w-full text-center rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white py-2 text-xs font-semibold transition-colors"
               >
-                <span>View Screenings at this Cinema</span>
-                <ArrowRight className="h-3.5 w-3.5" />
+                View Screenings
               </Link>
             </div>
           ))}

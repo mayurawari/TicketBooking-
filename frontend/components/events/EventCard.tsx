@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
 import { Event } from "@/lib/types";
-import { Star, MapPin, Calendar, Film, Sparkles } from "lucide-react";
 
 export default function EventCard({ event }: { event: Event }) {
   const formattedDate = event.releaseDate
@@ -13,8 +12,8 @@ export default function EventCard({ event }: { event: Event }) {
     : null;
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-rose-500/40 transition-all duration-300 hover:shadow-2xl hover:shadow-rose-950/30 hover:-translate-y-1">
-      {/* 2:3 Movie Poster Container (BookMyShow standard) */}
+    <div className="group relative flex flex-col overflow-hidden rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all duration-200 hover:shadow-lg">
+      {/* 2:3 Movie Poster */}
       <Link href={`/events/${event.id}`} className="relative aspect-[2/3] w-full overflow-hidden bg-zinc-950 block">
         {event.poster ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -22,61 +21,55 @@ export default function EventCard({ event }: { event: Event }) {
             src={event.poster}
             alt={event.title}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-102"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-tr from-zinc-900 to-zinc-800 text-zinc-600">
-            <Film className="h-14 w-14" />
+          <div className="flex h-full w-full items-center justify-center bg-zinc-900 text-zinc-600 text-xs font-semibold uppercase tracking-wider">
+            No Poster
           </div>
         )}
-
-        {/* Dark Gradient Overlay at Bottom of Poster */}
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent pointer-events-none" />
 
         {/* Rating Badge */}
         {event.rating !== null && event.rating !== undefined && (
-          <div className="absolute bottom-3 left-3 flex items-center gap-1 rounded-full bg-zinc-950/80 backdrop-blur-md px-2.5 py-1 text-xs font-bold text-amber-400 border border-amber-400/20 shadow-md">
-            <Star className="h-3 w-3 fill-amber-400" />
-            <span>{event.rating.toFixed(1)}/10</span>
+          <div className="absolute bottom-2.5 left-2.5 rounded-md bg-zinc-950/90 backdrop-blur-sm px-2 py-0.5 text-[11px] font-bold text-amber-400 border border-amber-400/20">
+            {event.rating.toFixed(1)} / 10
           </div>
         )}
 
-        {/* Screen/Experience Format Badge */}
-        <div className="absolute top-3 right-3 flex items-center gap-1 rounded-lg bg-rose-600/90 backdrop-blur-md px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider shadow">
-          {event.venue?.type === "MULTIPLEX" ? "IMAX • 2D" : "DOLBY 4K"}
+        {/* Format Badge */}
+        <div className="absolute top-2.5 right-2.5 rounded-md bg-zinc-950/80 backdrop-blur-sm px-2 py-0.5 text-[10px] font-semibold text-zinc-300 border border-zinc-800">
+          {event.venue?.type === "MULTIPLEX" ? "IMAX 2D" : "4K DOLBY"}
         </div>
       </Link>
 
-      {/* Card Content */}
-      <div className="flex flex-1 flex-col justify-between p-4 space-y-3">
-        <div className="space-y-1.5">
+      {/* Content */}
+      <div className="flex flex-1 flex-col justify-between p-3.5 space-y-2.5">
+        <div className="space-y-1">
           <Link href={`/events/${event.id}`}>
-            <h3 className="font-bold text-base text-white group-hover:text-rose-400 transition-colors line-clamp-1">
+            <h3 className="font-semibold text-sm text-white group-hover:text-rose-400 transition-colors line-clamp-1">
               {event.title}
             </h3>
           </Link>
 
-          {/* City & Venue Tag */}
+          {/* Venue & City */}
           {event.venue && (
-            <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-              <MapPin className="h-3.5 w-3.5 text-rose-500 flex-shrink-0" />
-              <span className="truncate">{event.venue.name}</span>
-            </div>
+            <p className="text-xs text-zinc-400 truncate">
+              {event.venue.name}, {event.venue.city}
+            </p>
           )}
 
           {/* Release Date */}
           {formattedDate && (
-            <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
-              <Calendar className="h-3 w-3 text-zinc-600 flex-shrink-0" />
-              <span>Released {formattedDate}</span>
-            </div>
+            <p className="text-[11px] text-zinc-500">
+              Released {formattedDate}
+            </p>
           )}
         </div>
 
-        {/* Action Button */}
+        {/* CTA */}
         <Link
           href={`/events/${event.id}`}
-          className="w-full flex items-center justify-center rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-amber-500 text-white py-2 text-xs font-semibold transition-all shadow-md shadow-rose-950/30"
+          className="w-full flex items-center justify-center rounded-lg bg-zinc-800 hover:bg-rose-600 text-zinc-200 hover:text-white py-2 text-xs font-semibold transition-colors"
         >
           Book Tickets
         </Link>
